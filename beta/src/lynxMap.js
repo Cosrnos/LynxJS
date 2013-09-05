@@ -45,6 +45,27 @@ Lynx.Map= function(pWidth,pHeight){
 		y = pY;
 	};
 
+	that.Pan = function(pX,pY){
+		this.SetX(x+pX);
+		this.SetY(y+pY);
+	};
+
+	that.Draw = function(pScene){
+		var ctx = pScene.GetCanvas().GetContext()
+			objects = this.GetObjects();		
+		for(var i in objects){
+			if(this.OnScreen(objects[i]) && objects[i].IsVisible())
+				objects[i].Draw(pScene,this);		
+		}
+	};
+
+	that.OnScreen = function(pObject){
+		return (x <= pObject.GetX() + pObject.GetWidth() &&
+			x + Lynx.Game.GetScreenWidth() >= pObject.GetX() &&
+			y <= pObject.GetY() + pObject.GetHeight() &&
+			y + Lynx.Game.GetScreenHeight() >= pObject.GetY());
+	};
+
 	that.AddObject = function(pObject){
 		objects.push(pObject);
 	};

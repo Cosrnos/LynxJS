@@ -5,7 +5,6 @@ Lynx.Scene = function(name){
 
 	var name = name,
 		bgm = false,
-		objects = [],
 		canvas = new Lynx.Canvas("LSCENE-"+name),
 		map = new Lynx.Map(100,100);
 
@@ -22,11 +21,7 @@ Lynx.Scene = function(name){
 	};
 
 	that.GetObjects = function(){
-		return objects;
-	};
-
-	that.GetAllObjects = function(){
-		return objects;
+		return map.GetObjects();
 	};
 
 	that.GetCanvas = function(){
@@ -57,8 +52,9 @@ Lynx.Scene = function(name){
 	};
 
 	that.AddObject = function(pGameObject){
-		objects.push(pGameObject);
+		map.AddObject(pGameObject);
 	};
+
 	that.GetIndex = function(pObject){
 		var index = -1;
 		for(var i in objects){
@@ -68,7 +64,12 @@ Lynx.Scene = function(name){
 		return index;
 	};
 
-	Lynx.Scene.RemoveObject = function(pIndex){
+	that.Draw = function(){
+		map.Draw(this);
+	};
+
+	return that;
+};ynx.Scene.RemoveObject = function(pIndex){
 		objects.splice(pIndex,1);
 	};
 

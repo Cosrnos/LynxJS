@@ -18,7 +18,10 @@ Lynx.GameObject = function(pName,pX,pY,pWidth,pHeight){
 		//but since you don't have much time let's forget it.
 
 	that.Update = function(){};
-	that.Draw = function(pScene){};
+	that.Draw = function(pScene,pMap){
+		var ctx = pScene.GetCanvas().GetContext();
+		ctx.fillRect(x-pMap.GetX(),y-pMap.GetY(),this.GetWidth(),this.GetHeight());		
+	};
 
 	that.GetInstance = function(){
 		return this;
