@@ -23,7 +23,10 @@ Lynx.EventListener = function(){
 		if(typeof events[pEvent] == 'undefined')
 			return true;
 
-		return events[pEvent](pSender);
+		var notifyNext = true;
+		for(var i = 0; i < events[pEvent].length && notifyNext; i++)
+			notifyNext = events[pEvent][i](pSender);
+		return notifyNext;
 	};
 
 	that.On = function(pEvent, pCallback)
@@ -32,7 +35,7 @@ Lynx.EventListener = function(){
 			events[pEvent] = [];
 
 		events[pEvent].push(pCallback);
-		Lynx.Emitter.Subscribe(pEvent, this);
+		Lynx.Emitter.Subscribe(pEvent, that);
 	};
 
 	return that;

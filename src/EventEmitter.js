@@ -28,7 +28,7 @@ Lynx.EventEmitter = function(){
 	};
 
 	that.Notify = function(pEvent, pSender)
-	{
+	{		
 		if(typeof events[pEvent] == 'undefined')
 			Logger.Warning("Emitting event `"+pEvent+"` sent by "+pSender+" as it has not been defined.");
 

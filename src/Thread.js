@@ -21,7 +21,9 @@ Lynx.Thread = function(pName){
 	//Properties
 	that.Delta = 0;
 	that.Name = name;
-	that.Running = true;
+	that.Running = false;
+
+	Lynx.Emitter.Define("_threadUpdate"+this.Name);
 
 	that.OnUpdate = function(pCallback){ this.On("_threadUpdate"+this.Name, pCallback); };
 
@@ -29,8 +31,11 @@ Lynx.Thread = function(pName){
 	{
 		if(intervId == null)
 		{
-			this.Running = true;
-			intervId = window.setInterval(update, pInterval);
+			that.Delta = 0;
+			that.lastUpdate = Date.now();
+			that.Running = true;
+			intervId = window.setInterval(that._threadUpdate, pInterval);
+			Lynx.Log("Starting "+that.Name+" Thread...");
 		}
 	}
 
@@ -39,21 +44,21 @@ Lynx.Thread = function(pName){
 		if(intervId != null)
 		{
 			window.clearInterval(intervId);
-			this.Running = false;
+			that.Running = false;
 		}
 	}
 
-	function threadUpdate = function()
+	that._threadUpdate = function()
 	{
-		if(this.Running = false)
-			this.Stop();
+		if(that.Running == false)
+			that.Stop();
 
-		this.Delta = Date.now() - lastUpdate;
-		Lynx.Emit("_threadUpdate"+this.Name, this);
+		that.Delta = Date.now() - lastUpdate;
+		Lynx.Emit("_threadUpdate"+that.Name, that);
 		lastUpdate = Date.now();
 	};
 
 	return that;
 };
 
-Lynx.T = function(){ return new Lynx.Object(); };
+Lynx.T = function(){ return new Lynx.Thread(); };

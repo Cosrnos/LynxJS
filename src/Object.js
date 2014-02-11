@@ -14,13 +14,29 @@
 Lynx.Object = function(){
 	var that = {};
 	//Private Variables
-	var eventListener = new Lynx.EventListener();
-	//Fallthroughs
-	that.Notify = function(pEvent, pSender) { return eventListener.Notify(pEvent, pSender); };
-	that.On = function(pEvent, pCallback) { return eventListener.On(pEvent, pCallback); };	
+	var events = [];
+	//Properties
 
 	//Public Methods
+	that.Notify = function(pEvent, pSender)
+	{
+		if(typeof events[pEvent] == 'undefined')
+			return true;
 
+		var notifyNext = true;
+		for(var i = 0; i < events[pEvent].length && notifyNext; i++)
+			notifyNext = events[pEvent][i](pSender, that);
+		return notifyNext;
+	};
+
+	that.On = function(pEvent, pCallback)
+	{
+		if(typeof events[pEvent] == 'undefined')
+			events[pEvent] = [];
+
+		events[pEvent].push(pCallback);
+		Lynx.Emitter.Subscribe(pEvent, that);
+	};
 	//Internal Methods
 
 	return that;

@@ -21,6 +21,8 @@ function LynxLibrary ()
 	var onLibraryLoad = function(){ };
 	//Properties
 	that.Filepath = "src/";
+	that.LogTarget = "";
+	that.Main = {};
 	//Public Methods
 
 	/// Load
@@ -28,34 +30,47 @@ function LynxLibrary ()
 	///  Loads the library and associated files
 	/// @pASyncCallback: A callback that is called once the load is completed
 	/// #returns - None
-	that.Load = function(pLibPath, pOnLibraryLoad)
+	that.Load = function(pOnLibraryLoad)
 	{
-		console.log("Attempting load");
-		this.Filepath = pLibPath;
+		this.Filepath = "src/";
 		onLibraryLoad = pOnLibraryLoad;
+		this._loadCore();
+	};
 
-		loadCore();
+	that.Start = function()
+	{
+		that.Main.Start();
+		that.Animator.Start();
 	};
 
 	//Internal Methods
-	function loadCore()
+	that._loadCore = function()
 	{
 		//Load all files
-		load(this.FilePath + "EventEmitter.js");
-		load(this.FilePath + "EventListener.js");
-		load(this.FilePath + "Object.js");
+		load(Lynx.Filepath + "Logger.js");
+		load(this.Filepath + "EventEmitter.js");
+		load(this.Filepath + "EventListener.js");
+		load(this.Filepath + "Object.js");
+		load(this.Filepath + "Canvas.js");
+		load(this.Filepath + "CanvasElement.js");
+		load(this.Filepath + "Thread.js");
+		load(this.Filepath + "Animator.js");
 	}
 
-	function loadCallback()
+	that._loadCallback = function(event)
 	{
 		loadStatus++;
-		checkLoadStatus();
+		that._checkLoadStatus();
 	}
 
-	function checkLoadStatus()
+	that._checkLoadStatus = function()
 	{
 		if(loadStatus >= loadTotal)
 		{
+			Lynx.Main = new Lynx.Thread("Main");
+			Lynx.Main.On("_threadUpdateMain",function(pSender){
+				Lynx.Emit("Update",pSender);
+			});
 			onLibraryLoad();
 		}
 	}
@@ -64,9 +79,9 @@ function LynxLibrary ()
 	{
 		var c = document.createElement("script");
 		c.type = "text/javascript";
-		c.href = pFilepath;
-		c.addEventListener("load", loadCallback);
-
+		c.async = false;
+		c.addEventListener("load", that._loadCallback, false);
+		c.src = pFilepath;
 		document.body.appendChild(c);
 		loadTotal++;
 	}
