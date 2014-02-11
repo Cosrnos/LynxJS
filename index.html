@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>LynxJS - Project Home</title>
+		<style>
+		
+		</style>
+		<script type="text/javascript" src="src/Lynx.js">
+		</script>
+		<script type="text/javascript">
+			window.addEventListener("load", function load(event){
+				console.log("Loading lynx library...");
+				Lynx.Load("src/", function(){
+					console.log("Lynx has been successfully loaded.");
+				});
+			},false);
+		</script>
+	</head>
+	<body>
+		<header>
+			<h1>LynxJS</h1>
+			<nav>
+				<a href="#">Project Home</a>
+				<a href="#">Documentation</a>
+				<a href="#">GitHub</a>
+				<a href="#">Donate</a>
+			</nav>
+		</header>
+		<div id="content">
+			<div id="lynx-container">
+			</div>
+			<div id="news">
+				<h2>What's new?</h2>
+				<ul>
+					<li>LynxJS Rewrite</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
