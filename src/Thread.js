@@ -58,6 +58,7 @@ Lynx.Thread = function(pName){
 		lastUpdate = Date.now();
 	};
 
+	Lynx.Emit("Thread.Create", that);
 	return that;
 };
 

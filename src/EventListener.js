@@ -34,8 +34,13 @@ Lynx.EventListener = function(){
 		if(typeof events[pEvent] == 'undefined')
 			events[pEvent] = [];
 
-		events[pEvent].push(pCallback);
+		events[pEvent].push(pCallback.bind(that));
 		Lynx.Emitter.Subscribe(pEvent, that);
+	};
+
+	that.Define = function(pEvent)
+	{
+		Lynx.Emitter.Define(pEvent);
 	};
 
 	return that;

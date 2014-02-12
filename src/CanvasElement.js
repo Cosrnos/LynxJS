@@ -30,7 +30,7 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 		}
 	}
 
-	that.On("draw", function(pSender){ return true; });
+	that.On("draw", function(pBuffer){ return true; });
 
 	//Event Callbacks
 	function onRequestAnimationFrame(pSender)
@@ -38,6 +38,7 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 		return this.Update();
 	}
 
+	Lynx.Emit("CanvasElement.Create", that);
 	return that;
 };
 

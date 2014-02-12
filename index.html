@@ -114,9 +114,8 @@
 		<script src="src/Lynx.js">
 		</script>
 		<script type="text/javascript">
-			var speed = 10;
-			var size = 15;
-			var limit = 50;
+			var size = 5;
+			var limit = 100;
 			var total = 0;
 
 			var Viewport = {};
@@ -124,48 +123,67 @@
 			window.addEventListener("load",function load(event){
 				Lynx.LogTarget = "console";
 				Lynx.Load(function(){
+					
+					Lynx.CM.On("ComponentManager.Register",function(pComponent){
+						if(pComponent.Name == "SampleComponent")
+							pComponent.HelloWorld();
+					});
+
+					Lynx.CM.Load("SampleComponent");
+					Lynx.CM.Load("MouseEvents");
+
 					Viewport = new Lynx.C("viewport","viewport-container",800,450);
 
-					addObject();
+					Viewport.On("MouseEvents.Down", function(pSender){
+						var vptPos = this.ParseMousePosition(pSender.X, pSender.Y);
+						addObject(vptPos.X, vptPos.Y);
+					});
+
 
 					Lynx.Start();
 				});
 			}, false);
 
-			var updateElements = function(pSender,pObject){				
-				
-				pObject.X += pObject.vx * Lynx.Animator.Delta / speed;
-				pObject.Y += pObject.vy * Lynx.Animator.Delta / speed;
+			var updateElement = function(pSender){
+				this.X += this.vx * Lynx.Animator.Delta / 200;
+				this.Y += this.vy * Lynx.Animator.Delta / 200;
 			
-				if(pObject.X+pObject.Width > Viewport.Width || pObject.X < 0)
+				if(this.X+this.Width > Viewport.Width + size)
 				{
-					pObject.vx = -pObject.vx;
-					addObject();
+					this.X = 0;
 				}
 
-				if(pObject.Y+pObject.Height > Viewport.Height || pObject.Y < 0)
+				if(this.X < -size)
 				{
-					pObject.vy = -pObject.vy;
-					addObject();
+					this.X = Viewport.Width-this.Width;
+				}
+
+				if(this.Y+this.Height > Viewport.Height + size)
+				{
+					this.Y = 0;
 				}
 
 				return true;
 			}
 
-			var addObject = function()
+			var addObject = function(pX, pY)
 			{
 				if(total++ > limit)
 					return;
 
-				var ce = Lynx.CE(0,0,size, size, "square");
-				
-				ce.vx = Math.random(15, 20);
-				ce.vy = Math.random(15, 20);
+				pX = pX || Math.floor(Math.random() * Viewport.Width);
+				pY = pY || -size;
 
-				ce.On("Update", updateElements);
+				var ce = Lynx.CE(pX, pY,size, size, "square");
+				
+				ce.vx = Math.floor(Math.random()* 2) + 1;
+				var left = Math.floor(Math.random() * 2) + 1;
+				ce.vx = (left === 1) ? -1 * ce.vx : ce.vx;
+				ce.vy = Math.floor(Math.random()*6) + 3;
+
+				ce.On("Update", updateElement);
 				Viewport.AddElement(ce);
 			}
-
 		</script>
 	</head>
 	<body>

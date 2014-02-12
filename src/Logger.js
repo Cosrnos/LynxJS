@@ -33,7 +33,13 @@ Lynx.Logger = (function LynxLogger()
 	  	var cons = document.getElementById(that.LogDiv);
 	  	cons.appendChild(sp);
 	  	cons.scrollTop += 18;
+	  	Lynx.Emit("Logger.Log", this);
 	};
+
+	that.Warning = function(pMessage)
+	{
+		that.Log(pMessage, "Warning");
+	}
 
 	that.Error = function(pMessage)
 	{
@@ -45,6 +51,7 @@ Lynx.Logger = (function LynxLogger()
 
 Lynx.Log = Lynx.Logger.Log;
 Lynx.Error = Lynx.Logger.Error;
+Lynx.Warning = Lynx.Logger.Warning;
 
 console.log = function(pMessage)
 {
@@ -54,5 +61,6 @@ console.log = function(pMessage)
 console.error = console.debug = console.info = console.log;
 
 window.onerror = function (message, file, line, position, error) {
-    Lynx.Log("An error was encountered at line "+line+":"+position+". \""+message+"\"", "Error");
+    Lynx.Log("An error was encountered in "+file+" at line "+line+":"+position+". \""+error+"\"", "Error");
+    Lynx.Emit("Core.Error", this);
 };

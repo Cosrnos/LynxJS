@@ -56,13 +56,19 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 	that.AddElement = function(pCanvasElement)
 	{
 		elements.push(pCanvasElement);
+		Lynx.Emit("Canvas.AddElement", this);
 		return elements[elements.length-1];
 	};
+
+	that.ParseMousePosition = function(pX, pY){
+		var cPos = canvas.getBoundingClientRect();
+		return {X: Math.floor(pX - cPos.left), Y: Math.floor(pY - cPos.top)};
+	}
 
 	//Event Callbacks
 	function onRequestAnimationFrame(pSender)
 	{
-		return that.Update();
+		return this.Update();
 	}
 
 	return that;

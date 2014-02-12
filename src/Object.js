@@ -34,11 +34,11 @@ Lynx.Object = function(){
 		if(typeof events[pEvent] == 'undefined')
 			events[pEvent] = [];
 
-		events[pEvent].push(pCallback);
+		events[pEvent].push(pCallback.bind(that));
 		Lynx.Emitter.Subscribe(pEvent, that);
 	};
 	//Internal Methods
-
+	Lynx.Emit("Object.Create", that);
 	return that;
 };
 

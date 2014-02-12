@@ -41,6 +41,7 @@ function LynxLibrary ()
 	{
 		that.Main.Start();
 		that.Animator.Start();
+		Lynx.Emit("Core.Ready");
 	};
 
 	//Internal Methods
@@ -51,6 +52,8 @@ function LynxLibrary ()
 		load(this.Filepath + "EventEmitter.js");
 		load(this.Filepath + "EventListener.js");
 		load(this.Filepath + "Object.js");
+		load(this.Filepath + "Component.js");
+		load(this.Filepath + "ComponentManager.js");
 		load(this.Filepath + "Canvas.js");
 		load(this.Filepath + "CanvasElement.js");
 		load(this.Filepath + "Thread.js");

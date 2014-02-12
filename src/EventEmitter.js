@@ -25,17 +25,26 @@ Lynx.EventEmitter = function(){
 			events[pEvent] = [];
 
 		events[pEvent].push(pEventListener);
+		this.Notify("EventEmitter.Subscribe", this);
 	};
 
 	that.Notify = function(pEvent, pSender)
-	{		
+	{
 		if(typeof events[pEvent] == 'undefined')
-			Logger.Warning("Emitting event `"+pEvent+"` sent by "+pSender+" as it has not been defined.");
+			return;
 
 		var nextCallback = true;
 
 		for(var i = 0; (i < events[pEvent].length && nextCallback); i++)
 			nextCallback = events[pEvent][i].Notify(pEvent, pSender);
+
+		if(!nextCallback)
+		{
+			//Assume the event was interrupted
+			this.Notify(pEvent+".Break", this);
+		}
+
+		this.Notify("EventEmitter.Subscribe",this);
 	};
 
 	that.Define = function(pEvent)
