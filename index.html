@@ -121,13 +121,21 @@
 
 			window.addEventListener("load",function load(event){
 				Lynx.LogTarget = "console";
-				Lynx.Load(function(){					
+				Lynx.Load(function(){
 					Viewport = new Lynx.C("viewport","viewport-container",800,450);
 
 					Lynx.CM.On("ComponentManager.Ready",function(cm){	
 						Lynx.Start();
 						Lynx.Log("Click anywhere in the viewport to add a snowflake!");
 						addObject();
+					});
+
+					Viewport.On("Keyboard.Press.SPACE", function(pSender){
+						addObject();
+					});
+
+					Viewport.On("Keyboard.Press.UP", function(pSender){
+						Lynx.Log("The up key has been pressed!");
 					});
 
 					Viewport.On("MouseEvents.Down", function(pSender){
@@ -174,7 +182,21 @@
 						}
 					});
 
-					Lynx.CM.Load("MouseEvents");
+					Lynx.CM.Load("MouseEvents","KeyboardEvents");
+
+					Lynx.AM.QueueImage("samples/snow/assets/logo.png");
+
+					Lynx.AM.LoadQueue(function(){
+						var asset = Lynx.AM.Get("samples/snow/assets/logo.png");
+						if(asset)
+							Viewport.On("requestAnimationFrame", function(){
+								Viewport.CenterImage(asset.Asset);								
+							});
+					});
+
+					Viewport.On("AssetManager.Queue.Finish", function(){
+						Lynx.Log("Queue finished!");
+					});
 				});
 			}, false);
 

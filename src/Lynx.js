@@ -54,6 +54,7 @@ function LynxLibrary ()
 		load(this.Filepath + "Object.js");
 		load(this.Filepath + "Component.js");
 		load(this.Filepath + "ComponentManager.js");
+		load(this.Filepath + "AssetManager.js");
 		load(this.Filepath + "Canvas.js");
 		load(this.Filepath + "CanvasElement.js");
 		load(this.Filepath + "Thread.js");

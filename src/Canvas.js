@@ -60,10 +60,16 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 		return elements[elements.length-1];
 	};
 
-	that.ParseMousePosition = function(pX, pY){
+	that.ParseMousePosition = function(pX, pY)
+	{
 		var cPos = canvas.getBoundingClientRect();
 		return {X: Math.floor(pX - cPos.left), Y: Math.floor(pY - cPos.top)};
 	}
+
+	that.CenterImage = (function(pImage)
+	{
+		this.Ctx("2d").drawImage(pImage, Math.floor((this.Width-pImage.width)/2), Math.floor((this.Height-pImage.height)/2));
+	}).bind(that);
 
 	//Event Callbacks
 	function onRequestAnimationFrame(pSender)
