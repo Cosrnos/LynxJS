@@ -111,28 +111,24 @@
 				font-family: Consolas, "Courier New", Courier, monospace;
 			}
 		</style>
-		<script src="src/Lynx.js">
-		</script>
 		<script type="text/javascript">
 			var size = 5;
-			var limit = 100;
+			var limit = 1500;
 			var total = 0;
-
+			var timeTotal = 0;
 			var Viewport = {};
+			var state = 0;
 
 			window.addEventListener("load",function load(event){
 				Lynx.LogTarget = "console";
-				Lynx.Load(function(){
-					
-					Lynx.CM.On("ComponentManager.Register",function(pComponent){
-						if(pComponent.Name == "SampleComponent")
-							pComponent.HelloWorld();
-					});
-
-					Lynx.CM.Load("SampleComponent");
-					Lynx.CM.Load("MouseEvents");
-
+				Lynx.Load(function(){					
 					Viewport = new Lynx.C("viewport","viewport-container",800,450);
+
+					Lynx.CM.On("ComponentManager.Ready",function(cm){	
+						Lynx.Start();
+						Lynx.Log("Click anywhere in the viewport to add a snowflake!");
+						addObject();
+					});
 
 					Viewport.On("MouseEvents.Down", function(pSender){
 						var vptPos = this.ParseMousePosition(pSender.X, pSender.Y);
@@ -140,7 +136,45 @@
 					});
 
 
-					Lynx.Start();
+					Viewport.On("Update", function(thing){
+						if(total >= 25 && state == 0)
+						{
+							Lynx.Log("Welcome to your personal winter wonderland!");
+							state++;
+						}
+						else if(total >= 50 && state == 1)
+						{
+							Lynx.Log("It's starting to really come down!");
+							state++;
+						}
+						else if(total >= 80 && state == 2)
+						{
+							Lynx.Log("Brr!");
+							state++;
+						}
+						else if(total >= 250 && state == 3)
+						{
+							Lynx.Log("Oh the weather in here is frightful!");
+							state++;
+						}
+						else if(total >= 500 && state == 4)
+						{
+							Lynx.Log("So many snowflakes!");
+							state++;
+						}
+						else if(total >= 1000 && state == 5)
+						{
+							Lynx.Log("This is officially a blizzard!");
+							state++;
+						}
+						else if(total >= limit && state == 6)
+						{
+							Lynx.Log("You've officially hit the engine limit!");
+							state++;
+						}
+					});
+
+					Lynx.CM.Load("MouseEvents");
 				});
 			}, false);
 
@@ -151,16 +185,19 @@
 				if(this.X+this.Width > Viewport.Width + size)
 				{
 					this.X = 0;
+					addObject();
 				}
 
 				if(this.X < -size)
 				{
 					this.X = Viewport.Width-this.Width;
+					addObject();
 				}
 
 				if(this.Y+this.Height > Viewport.Height + size)
 				{
 					this.Y = 0;
+					addObject();
 				}
 
 				return true;
@@ -168,7 +205,7 @@
 
 			var addObject = function(pX, pY)
 			{
-				if(total++ > limit)
+				if(total++ > limit && typeof pX == 'undefined')
 					return;
 
 				pX = pX || Math.floor(Math.random() * Viewport.Width);
@@ -184,6 +221,8 @@
 				ce.On("Update", updateElement);
 				Viewport.AddElement(ce);
 			}
+		</script>
+		<script src="src/Lynx.js">
 		</script>
 	</head>
 	<body>

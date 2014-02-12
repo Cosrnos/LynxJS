@@ -28,5 +28,3 @@ Lynx.Component = function(pName,  pAuthor, pDescription, pBuildCallback){
 
 	return that;
 };
-
-Lynx.CM = Lynx.ComponentManager;

@@ -36,7 +36,7 @@ Lynx.EventEmitter = function(){
 		var nextCallback = true;
 
 		for(var i = 0; (i < events[pEvent].length && nextCallback); i++)
-			nextCallback = events[pEvent][i].Notify(pEvent, pSender);
+			nextCallback = events[pEvent][i].Notify(pEvent, pSender) || true;
 
 		if(!nextCallback)
 		{

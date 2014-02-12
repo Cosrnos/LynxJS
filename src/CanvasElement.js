@@ -23,11 +23,8 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	//Public Methods
 	that.Draw = function(pBuffer)
 	{
-		if(this.Notify("draw",pBuffer))
-		{
-			pBuffer.getContext("2d").fillStyle = "#ffffff";
-			pBuffer.getContext("2d").fillRect(this.X, this.Y, this.Width, this.Height); 
-		}
+		pBuffer.getContext("2d").fillStyle = "#ffffff";
+		pBuffer.getContext("2d").fillRect(this.X, this.Y, this.Width, this.Height); 
 	}
 
 	that.On("draw", function(pBuffer){ return true; });

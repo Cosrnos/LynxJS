@@ -15,20 +15,22 @@
 Lynx.ComponentManager = (function(){
 	var that = new Lynx.Object();
 	
-	var components = [];
+	var components = {};
 	var loadTotal = 0;
 	var loaded = 0;
 
-	that.Load = function(pComponentName)
+	that.Load = function()
 	{
-		load(Lynx.Filepath + "components/" + pComponentName + ".js");
+		loadTotal += arguments.length;
+		
+		for(var i = 0; i < loadTotal; i++)
+		{
+			load(Lynx.Filepath + "components/" + arguments[i] + ".js");
+		}
 	}
 
 	that.Get = function(pComponentName)
 	{
-		if(typeof components[pComponentName] == 'undefined')
-			return;
-
 		return components[pComponentName];
 	}
 
@@ -49,17 +51,16 @@ Lynx.ComponentManager = (function(){
 		var c = document.createElement("script");
 		c.type = "text/javascript";
 		c.async = false;
-		c.addEventListener("load", onload.bind(this), false);
+		c.addEventListener("load", onload.bind(that), false);
 		c.src = pFilepath;
 		document.body.appendChild(c);
-		loadTotal++;
 	}
 
 	function onload(event)
 	{
 		loaded++;
 		if(loaded >= loadTotal)
-			Lynx.Emit("ComponentManager.Ready", this);
+			Lynx.Emit("ComponentManager.Ready", that);
 	}
 
 	return that;
