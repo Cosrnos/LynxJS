@@ -20,18 +20,19 @@ function LynxLibrary ()
 	var loadTotal = 0;
 
 	var onLibraryLoad = function(){ };
+
 	//Properties
 	that.Filepath = "src/";
 	that.LogTarget = "";
 	that.Main = {};
 	that.Paused = false;
-	//Public Methods
 
-	/// Load
-	/// Description:
-	///  Loads the library and associated files
-	/// @pASyncCallback: A callback that is called once the load is completed
-	/// #returns - None
+	/**
+	* Description: Loads the Lynx JS Library
+	*
+	* @this {LynxLibrary}
+	* @param {callback} <pOnLibraryLoad> Callback to be executed on load completion
+	*/
 	that.Load = function(pOnLibraryLoad)
 	{
 		this.Filepath = "src/";
@@ -39,6 +40,11 @@ function LynxLibrary ()
 		this._loadCore();
 	};
 
+	/**
+	* Description: Starts the internal animation and update threads
+	*
+	* @this {LynxLibrary}
+	*/
 	that.Start = function()
 	{
 		that.Main.Start();
@@ -46,8 +52,14 @@ function LynxLibrary ()
 		Lynx.Emit("Core.Ready");
 	};
 
-	//Internal Methods
-	that._loadCore = function()
+	/**
+	* Description: Loads the core objects
+	*
+	* @internal
+	* @this {LynxLibrary}
+	*/
+
+	function loadCore = function()
 	{
 		//Load all files
 		load(Lynx.Filepath + "Logger.js");
@@ -63,49 +75,76 @@ function LynxLibrary ()
 		load(this.Filepath + "Animator.js");
 	}
 
-	that._loadCallback = function(event)
+	/**
+	* Description: Called when a file is finished loading
+	*
+	* @this {LynxLibrary}
+	* @param {window.event} <ev> The event paramater passed by default
+	*/
+	function loadCallback = function(ev)
 	{
 		loadStatus++;
-		that._checkLoadStatus();
+		checkLoadStatus();
 	}
 
-	that._checkLoadStatus = function()
+	/**
+	* Description: Checks whether the core is finished loading or not
+	*   and initializes required components if it is.
+	*
+	* @this {LynxLibrary}
+	*/
+	function checkLoadStatus = function()
 	{
 		if(loadStatus >= loadTotal)
 		{
-			Lynx.Main = new Lynx.Thread("Main");
-			Lynx.Main.On("_threadUpdateMain",function(pSender){
-				if(!documentHidden()){
-					Lynx.Emit("Update",pSender);
-					that.Paused = false;
-				}
-				else
-				{
-					Lynx.Emit("Paused", pSender);
-					that.Paused = true;
-				}
-			});
 			initializeEngine();
 			onLibraryLoad();
 		}
 	}
 
+	/**
+	* Description: Initializes threads
+	*
+	* @this {LynxLibrary}
+	*/
 	function initializeEngine()
 	{
-		//Window binds here
+		Lynx.Main = new Lynx.Thread("Main");
+		Lynx.Main.On("_threadUpdateMain",function(pSender){
+			if(!documentHidden()){
+				Lynx.Emit("Update",pSender);
+				that.Paused = false;
+			}
+			else
+			{
+				Lynx.Emit("Paused", pSender);
+				that.Paused = true;
+			}
+		});
 	}
 
+	/**
+	* Description: Adds a file to the load queue
+	*
+	* @this {LynxLibrary}
+	* @param {String} <pFilepath> location of the file to load
+	*/
 	function load(pFilepath)
 	{
 		var c = document.createElement("script");
 		c.type = "text/javascript";
 		c.async = false;
-		c.addEventListener("load", that._loadCallback, false);
+		c.addEventListener("load", loadCallback.bind(this), false);
 		c.src = pFilepath;
 		document.body.appendChild(c);
 		loadTotal++;
 	}
 
+	/**
+	* Description: returns whether the page is visible and updatable
+	*
+	* @this {LynxLibrary}
+	*/
 	function documentHidden(){
 		return document.hidden || document.msHidden || document.webkitHidden || document.mozHidden;
 	}

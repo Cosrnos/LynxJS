@@ -20,6 +20,13 @@ Lynx.AssetManager = (function(){
 	var processing = false;
 	var queueFinishCallback = function(){ };
 
+	/**
+	* Description: Gets the asset by name
+	*
+	* @this {Lynx.AssetManager}
+	* @param {String} <pName> The name of the desired asset.
+	* @return {Lynx.Asset || bool} Returns the asset or false if not found
+	*/
 	that.Get = function(pName)
 	{
 		for(var i in assets)
@@ -33,6 +40,13 @@ Lynx.AssetManager = (function(){
 		return false;
 	}
 
+	/**
+	* Description: Whether the asset manager already has an asset with the given name
+	*
+	* @this {Lynx.AssetManager}
+	* @param {String} <pName> The given name to search for
+	* @return {bool} True if queue or assets has an asset with pName
+	*/
 	that.Contains = function(pName)
 	{
 		var found = false;
@@ -60,12 +74,25 @@ Lynx.AssetManager = (function(){
 		return found;
 	}
 
+	/**
+	* Description: Adds an asset to the loading queue
+	*
+	* @this {Lynx.AssetManager}
+	* @param {Lynx.Asset} <pAsset> The asset to add to the queue
+	*/
 	that.Queue = function(pAsset)
 	{
-		if(!this.Contains(pAsset))
+		if(!this.Contains(pAsset.Name) && !processing)
 			queue.push(pAsset);
 	}
 
+	/**
+	* Description: Adds the given image to the loading queue
+	*
+	* @this {Lynx.AssetManager}
+	* @param {String} <pName> Asset Name/Reference
+	* @param {String} <pFilepath> Location of the asset relative to the working directory
+	*/
 	that.QueueImage = function(pName, pFilepath)
 	{
 
@@ -80,21 +107,41 @@ Lynx.AssetManager = (function(){
 		this.Queue(asset);
 	}
 
+	/**
+	* Description: Adds the given audio to the loading queue
+	*
+	* @unimplimented
+	* @this {Lynx.AssetManager}
+	* @param {String} <pPath> Location of the asset relative to the working directory
+	*/
 	that.QueueAudio = function(pPath)
 	{
 		return;
 	}
 
+	/**
+	* Description: Adds the given video to the loading queue
+	*
+	* @unimplimented
+	* @this {Lynx.AssetManager}
+	* @param {String} <pPath> Location of the asset relative to the working directory
+	*/
 	that.QueueVideo = function(pPath)
 	{
 		return;
 	}
 
-	//Please note that only one queue may be loaded
-	//at one time. THIS IS BLOCKING.
+	/**
+	* Description: Loads all assets in the queue
+	*    This code is blocking and will not allow anymore assets to be loaded until the
+	*    current queue is finished processing.
+	*
+	* @this {Lynx.AssetManager}
+	* @param {Callback} <pCallback> Callback to be executed when all Assets have been loaded
+	*/
 	that.LoadQueue = function(pCallback)
 	{
-		if(processing)
+		if(processing || queue.length <= 0)
 			return;
 
 		processing = true;
@@ -150,13 +197,32 @@ Lynx.AssetManager = (function(){
 		queueFinishCallback = pCallback;
 	}
 
+	/**
+	* Description: Counts the amount of items in the current queue
+	*
+	* @this {Lynx.AssetManager}
+	* @return {int} Amount of items to be loaded
+	*/
 	that.QueueCount = function()
 	{
 		return queue.length;
 	}
 
+	/**
+	* Description: Whether the Asset Manager is loading items or not
+	*
+	* @this {Lynx.AssetManager}
+	* @return {bool} True if loading assets.
+	*/
 	that.IsProcessing = function() { return processing; };
 
+	/**
+	* Description: Called once an asset has been loaded and checks if all assets have been loaded
+	*
+	* @internal
+	* @this {Lynx.AssetManager}
+	* @param {Lynx.Asset} <pAsset> The asset that has just finished loading
+	*/
 	function queueCallback(pAsset)
 	{
 		if(queue.indexOf(pAsset) > -1)
@@ -180,6 +246,12 @@ Lynx.AssetManager = (function(){
 	return that;
 })();
 
+/**
+* Description: A loadable asset used by Lynx
+*
+* @object
+* @this {Lynx.Asset}
+*/
 Lynx.Asset = function(){ 
 	return {
 		Name: "",

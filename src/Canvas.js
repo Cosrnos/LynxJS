@@ -35,13 +35,30 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 
 	var elements = [];
 
+	/**
+	* Description: Gets the HTML Canvas Element
+	*
+	* @this {Lynx.Canvas}
+	* @return {HTMLCanvasElement} The direct canvas element
+	*/	
 	that.Element = function(){ return canvas; }
+
+	/**
+	* Description: Gets the HTMLCanvasElement Context
+	*
+	* @this {Lynx.Canvas}
+	* @param {String} <pContext> The Context to retreive
+	*/	
 	that.Ctx = function(pContext){ pContext = pContext || "2d"; return canvas.getContext(pContext); }
 
 	//Event Definitions
 	that.On("requestAnimationFrame", onRequestAnimationFrame);
 
-	//Public Methods
+	/**
+	* Description: Draws all canvas elements
+	*
+	* @this {Lynx.Canvas}
+	*/
 	that.Update = function()
 	{ 
 		buffer.getContext("2d").clearRect(0, 0, buffer.width, buffer.height);
@@ -53,25 +70,51 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 		return true;
 	};
 
+	/**
+	* Description: Adds the canvas element to the canvas
+	*
+	* @this {Lynx.Canvas}
+	* @param {Lynx.CanvasElement} <pCanvasElement> The element to add
+	* @return {int} the index of the added element (For removal later)
+	*/	
 	that.AddElement = function(pCanvasElement)
 	{
 		elements.push(pCanvasElement);
 		Lynx.Emit("Canvas.AddElement", this);
-		return elements[elements.length-1];
+		return elements.length-1;
 	};
 
+	/**
+	* Description: Takes a mouse position relative to the window and determines where it is on the canvas
+	*
+	* @this {Lynx.Canvas}
+	* @param {int} <pX> X position of the mouse
+	* @param {int} <pY> Y Position of the mouse
+	* @return {Object{X,Y}} Given coordinates relative to the canvas.
+	*/	
 	that.ParseMousePosition = function(pX, pY)
 	{
 		var cPos = canvas.getBoundingClientRect();
 		return {X: Math.floor(pX - cPos.left), Y: Math.floor(pY - cPos.top)};
 	}
 
+	/**
+	* Description: Vertically and horizontally centers the provided image on the canvas
+	*
+	* @this {Lynx.Canvas}
+	* @param {Image} <pImage> Image to be centered
+	*/	
 	that.CenterImage = (function(pImage)
 	{
 		this.Ctx("2d").drawImage(pImage, Math.floor((this.Width-pImage.width)/2), Math.floor((this.Height-pImage.height)/2));
 	}).bind(that);
 
-	//Event Callbacks
+	/**
+	* Description: Fired when the window is ready to render another frame
+	*
+	* @this {Lynx.Canvas}
+	* @param {Lynx.Animator} <pSender> The Lynx Animation Thread
+	*/	
 	function onRequestAnimationFrame(pSender)
 	{
 		return this.Update();
