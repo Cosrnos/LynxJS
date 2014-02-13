@@ -18,11 +18,13 @@ function LynxLibrary ()
 
 	var loadStatus = 0;
 	var loadTotal = 0;
+
 	var onLibraryLoad = function(){ };
 	//Properties
 	that.Filepath = "src/";
 	that.LogTarget = "";
 	that.Main = {};
+	that.Paused = false;
 	//Public Methods
 
 	/// Load
@@ -73,10 +75,24 @@ function LynxLibrary ()
 		{
 			Lynx.Main = new Lynx.Thread("Main");
 			Lynx.Main.On("_threadUpdateMain",function(pSender){
-				Lynx.Emit("Update",pSender);
+				if(!documentHidden()){
+					Lynx.Emit("Update",pSender);
+					that.Paused = false;
+				}
+				else
+				{
+					Lynx.Emit("Paused", pSender);
+					that.Paused = true;
+				}
 			});
+			initializeEngine();
 			onLibraryLoad();
 		}
+	}
+
+	function initializeEngine()
+	{
+		//Window binds here
 	}
 
 	function load(pFilepath)
@@ -90,6 +106,9 @@ function LynxLibrary ()
 		loadTotal++;
 	}
 
+	function documentHidden(){
+		return document.hidden || document.msHidden || document.webkitHidden || document.mozHidden;
+	}
 
 	return that;
 }

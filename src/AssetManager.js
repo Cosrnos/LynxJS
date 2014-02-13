@@ -107,21 +107,42 @@ Lynx.AssetManager = (function(){
 				case "img":
 					var img = new Image();
 					
-					img.onload = function(){
+					img.addEventListener("load",function(){
 						queueCallback(i);
-					}
+					}, false);
 
 					img.src = i.Filepath;
 					i.Asset = img;
 					break;
 				case "audio":
-					//Unsupported
+					var audio = new Audio();
+
+					audio.addEventListener("canplaythrough", function(){
+						queueCallback(i);
+					}, false);
+
+					audio.src = i.Filepath;
+					i.Asset = audio;
 					break;
 				case "video":
-					//Unsupported
+					var video = new Video();
+
+					video.addEventListener("canplaythrough", function(){
+						queueCallback(i);
+					}, false);
+
+					video.src = i.Filepath;
+					i.Asset = video;
 					break;
 				default:
-					//Unsupported
+					//No idea what this is, so we'll treat it as a file
+					//Probably not the best but it works for now ~Cosrnos
+					var client = new XMLHttpRequest();
+					client.open('GET', i.Filepath);
+					client.addEventListener("readystatechange", function(){
+						queueCallback(i);
+					}, false);
+					client.send();
 					break;
 			}
 		}
