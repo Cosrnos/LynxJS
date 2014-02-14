@@ -8,7 +8,7 @@
 *    ------------------------------------------------------
 *    File Name: Animator.js
 *    Description: The main animation "Thread." All canvas elements should subscribe to this class
-*    Global Variables: Lynx.Animator
+*    Global Variables: Lynx.Animator{}
 */
 
 Lynx.Animator = (function(pName){
@@ -18,41 +18,59 @@ Lynx.Animator = (function(pName){
 	Lynx.Emitter.Define("requestAnimationFrame");
 	Lynx.Emitter.Define("_requestAnimationFrame"+this.Name);
 
-
-	that.Start = function(pInterval)
+	/**
+	* Description: Starts the animation thread
+	*
+	* @this {Lynx.Animator}
+	*/
+	that.Start = (function()
 	{
-		if(!that.Running)
+		if(!this.Running)
 		{
 			Lynx.Log("Starting Animation Thread...");
-			that.Running = true;
-			requestFrame(that._threadUpdate);
+			this.Running = true;
+			requestFrame(_threadUpdate);
 		}
-		else
-			Lynx.Log(that.Running);
-	}
+	}).bind(that);
 
-	that.Stop = function()
+	/**
+	* Description: "Stops" the animation thread.
+	*
+	* @this {Lynx.Animator}
+	*/
+	that.Stop = (function()
 	{
-		that.Running = false;
+		this.Running = false;
 		Lynx.Log("Stopping Animation Thread...");
-	}
+	}).bind(that);
 
-	that._threadUpdate = function()
+	/**
+	* Description: The animation thread update primary callback
+	*
+	* @this {Lynx.Animator}
+	*/
+	var _threadUpdate = (function()
 	{
-		if(!that.Running)
+		if(!this.Running)
 		{
 			Lynx.Log("Stopped Animation Thread.");
 			return;
 		}
 
-		requestFrame(that._threadUpdate);
+		requestFrame(_threadUpdate);
 
-		that.Delta = Date.now() - lastUpdate;
+		this.Delta = Date.now() - lastUpdate;
 		Lynx.Emit("_requestAnimationFrame"+this.Name, this);
 		Lynx.Emit("requestAnimationFrame", this);
 		lastUpdate = Date.now();
-	};
+	}).bind(that);
 
+	/**
+	* Description: Initializes the proper window.requestAnimationFrame method
+	*
+	* @this {Lynx.Animator}
+	* @return {Callback} Proper request animation frame or a settimeout callback
+	*/
 	var requestFrame = (function(){
 		return window.requestAnimationFrame ||
 			window.webkitRequestAnimationFrame ||

@@ -2,6 +2,13 @@
 *    Lynx Project
 *    Started August 2013
 *    ------------------------------------------------------
+*    Below you will find the stupid bug counter. Please
+*    increment this if you spend a lot of time trying to
+*    fix a bug only to find it was something incredibly
+*    obvious.
+*
+*    Total Hours Wasted Fixing Stupid Bugs: 3
+*    ------------------------------------------------------
 *    This file is covered under the LynxJS Game Library
 *    License. Please read license.txt for more information
 *    on usage of this library.
@@ -33,24 +40,24 @@ function LynxLibrary ()
 	* @this {LynxLibrary}
 	* @param {callback} <pOnLibraryLoad> Callback to be executed on load completion
 	*/
-	that.Load = function(pOnLibraryLoad)
+	that.Load = (function(pOnLibraryLoad)
 	{
 		this.Filepath = "src/";
 		onLibraryLoad = pOnLibraryLoad;
-		this._loadCore();
-	};
+		loadCore();
+	}).bind(that);
 
 	/**
 	* Description: Starts the internal animation and update threads
 	*
 	* @this {LynxLibrary}
 	*/
-	that.Start = function()
+	that.Start = (function()
 	{
-		that.Main.Start();
-		that.Animator.Start();
+		this.Main.Start();
+		this.Animator.Start();
 		Lynx.Emit("Core.Ready");
-	};
+	}).bind(that);
 
 	/**
 	* Description: Loads the core objects
@@ -59,10 +66,10 @@ function LynxLibrary ()
 	* @this {LynxLibrary}
 	*/
 
-	function loadCore = function()
+	var loadCore = (function()
 	{
 		//Load all files
-		load(Lynx.Filepath + "Logger.js");
+		load(this.Filepath + "Logger.js");
 		load(this.Filepath + "EventEmitter.js");
 		load(this.Filepath + "EventListener.js");
 		load(this.Filepath + "Object.js");
@@ -73,7 +80,7 @@ function LynxLibrary ()
 		load(this.Filepath + "CanvasElement.js");
 		load(this.Filepath + "Thread.js");
 		load(this.Filepath + "Animator.js");
-	}
+	}).bind(that);
 
 	/**
 	* Description: Called when a file is finished loading
@@ -81,11 +88,11 @@ function LynxLibrary ()
 	* @this {LynxLibrary}
 	* @param {window.event} <ev> The event paramater passed by default
 	*/
-	function loadCallback = function(ev)
+	var loadCallback = (function(ev)
 	{
 		loadStatus++;
 		checkLoadStatus();
-	}
+	}).bind(that);
 
 	/**
 	* Description: Checks whether the core is finished loading or not
@@ -93,35 +100,49 @@ function LynxLibrary ()
 	*
 	* @this {LynxLibrary}
 	*/
-	function checkLoadStatus = function()
+	var checkLoadStatus = (function()
 	{
 		if(loadStatus >= loadTotal)
 		{
 			initializeEngine();
 			onLibraryLoad();
 		}
-	}
+	}).bind(that);
 
 	/**
 	* Description: Initializes threads
 	*
 	* @this {LynxLibrary}
 	*/
-	function initializeEngine()
+	var initializeEngine = (function()
 	{
-		Lynx.Main = new Lynx.Thread("Main");
-		Lynx.Main.On("_threadUpdateMain",function(pSender){
-			if(!documentHidden()){
+		//Utils
+		console.log = function(pMessage)
+		{
+			Lynx.Log(pMessage);
+		}
+
+		console.error = console.debug = console.info = console.log;
+
+		window.onerror = function (message, file, line, position, error) {
+		    Lynx.Log("An error was encountered in "+file+" at line "+line+":"+position+". \""+error+"\"", "Error");
+		    Lynx.Emit("Core.Error", this);
+		};
+
+		//Threads
+		this.Main = new Lynx.Thread("Main");
+		this.Main.On("_threadUpdateMain",function(pSender){
+			if(!Lynx.DocumentHidden()){
 				Lynx.Emit("Update",pSender);
-				that.Paused = false;
+				Lynx.Paused = false;
 			}
 			else
 			{
 				Lynx.Emit("Paused", pSender);
-				that.Paused = true;
+				Lynx.Paused = true;
 			}
 		});
-	}
+	}).bind(that);
 
 	/**
 	* Description: Adds a file to the load queue
@@ -129,7 +150,7 @@ function LynxLibrary ()
 	* @this {LynxLibrary}
 	* @param {String} <pFilepath> location of the file to load
 	*/
-	function load(pFilepath)
+	var load = (function(pFilepath)
 	{
 		var c = document.createElement("script");
 		c.type = "text/javascript";
@@ -138,14 +159,14 @@ function LynxLibrary ()
 		c.src = pFilepath;
 		document.body.appendChild(c);
 		loadTotal++;
-	}
+	}).bind(that);
 
 	/**
 	* Description: returns whether the page is visible and updatable
 	*
 	* @this {LynxLibrary}
 	*/
-	function documentHidden(){
+	that.DocumentHidden = function(){
 		return document.hidden || document.msHidden || document.webkitHidden || document.mozHidden;
 	}
 

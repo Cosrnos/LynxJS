@@ -13,22 +13,33 @@
 
 Lynx.EventEmitter = function(){
 	var that = {};
-	//Private Variables
-	var events = [];
-	//Properties
 
-	//Public Methods
-	
-	that.Subscribe = function(pEvent,pEventListener)
+	var events = [];
+
+	/**
+	* Descripton: Subscribes the event listener to the given event
+	*
+	* @this {Lynx.EventEmitter}
+	* @param {String} <pEvent> name of event to subscribe to
+	* @param {Lynx.EventListener} <pEventListener> Listener to subscribe
+	*/	
+	that.Subscribe = (function(pEvent,pEventListener)
 	{
 		if(typeof events[pEvent] == 'undefined')
 			events[pEvent] = [];
 
 		events[pEvent].push(pEventListener);
 		this.Notify("EventEmitter.Subscribe", this);
-	};
+	}).bind(that);
 
-	that.Notify = function(pEvent, pSender)
+	/**
+	* Description: Notifies all listeners of an event
+	*
+	* @this {Lynx.EventEmitter}
+	* @param {String} <pEvent> name of event to notify of
+	* @param {Object} <pSender> object that is sending the event.
+	*/	
+	that.Notify = (function(pEvent, pSender)
 	{
 		if(typeof events[pEvent] == 'undefined')
 			return;
@@ -45,18 +56,22 @@ Lynx.EventEmitter = function(){
 		}
 
 		this.Notify("EventEmitter.Subscribe",this);
-	};
+	}).bind(that);
 
-	that.Define = function(pEvent)
+	/**
+	* Description: Defines a given event to be emitted later.
+	*
+	* @depreciated
+	* @this {Lynx.EventEmitter}
+	* @param {String} <pEvent> Event to add
+	*/
+	that.Define = (function(pEvent)
 	{
 		if(typeof events[pEvent] != 'undefined')
 			return false;
 
 		events[pEvent] = [];
-	};
-
-	//Internal Methods
-
+	}).bind(that);
 
 	return that;
 };

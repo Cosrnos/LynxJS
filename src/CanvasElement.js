@@ -20,22 +20,23 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	that.Height = pHeight;
 	that.Type = pElementType;
 
-	//Public Methods
-	that.Draw = function(pBuffer)
+	/**
+	* Description: Updates the canvas object
+	*
+	* @this {Lynx.CanvasElement}
+	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
+	*/
+	that.Draw = (function(pBuffer)
 	{
 		pBuffer.getContext("2d").fillStyle = "#ffffff";
 		pBuffer.getContext("2d").fillRect(this.X, this.Y, this.Width, this.Height); 
-	}
-
-	that.On("draw", function(pBuffer){ return true; });
+	}).bind(that);
 
 	//Event Callbacks
-	function onRequestAnimationFrame(pSender)
-	{
-		return this.Update();
-	}
+	that.On("draw", function(pBuffer){ return true; });
 
 	Lynx.Emit("CanvasElement.Create", that);
+
 	return that;
 };
 

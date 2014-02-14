@@ -16,10 +16,17 @@ Lynx.Logger = (function LynxLogger()
 	//Private variables
 	var that = {};
 
-	that.LogDiv = Lynx.LogTarget;
+	that.LogDiv = Lynx.LogTarget || false;
 	console.olog = console.log || function(pMessage){ };
 
-	that.Log = function(pMessage, pPrefix)
+	/**
+	* Description: Logs the given message to the console window(s)
+	*
+	* @this {Lynx.Logger}
+	* @param {String} <pMessage> Message to log
+	* @param {String} <pSender> prefix to append to the log. Defaults to Info
+	*/	
+	that.Log = (function(pMessage, pPrefix)
 	{
 	    console.olog(pMessage);
 
@@ -31,16 +38,32 @@ Lynx.Logger = (function LynxLogger()
 	  	var sp = document.createElement("span");
 	  	sp.innerHTML = "&nbsp;["+pPrefix+"]&nbsp;"+pMessage;
 	  	var cons = document.getElementById(that.LogDiv);
-	  	cons.appendChild(sp);
-	  	cons.scrollTop += 18;
+	  	if(typeof cons != 'undefined')
+	  	{
+			cons.appendChild(sp);
+		  	cons.scrollTop += 18;
+		}
+		
 	  	Lynx.Emit("Logger.Log", this);
-	};
+	}).bind(that);
 
+	/**
+	* Description: Logs a warning to the console
+	*
+	* @this {Lynx.Logger}
+	* @param {String} <pMessage> message to log
+	*/	
 	that.Warning = function(pMessage)
 	{
 		that.Log(pMessage, "Warning");
 	}
 
+	/**
+	* Description: Logs an error to the console
+	*
+	* @this {Lynx.Logger}
+	* @param {String} <pMessage> message to log
+	*/	
 	that.Error = function(pMessage)
 	{
 		that.Log(pMessage,"Error");
@@ -52,15 +75,3 @@ Lynx.Logger = (function LynxLogger()
 Lynx.Log = Lynx.Logger.Log;
 Lynx.Error = Lynx.Logger.Error;
 Lynx.Warning = Lynx.Logger.Warning;
-
-console.log = function(pMessage)
-{
-	Lynx.Log(pMessage);
-}
-
-console.error = console.debug = console.info = console.log;
-
-window.onerror = function (message, file, line, position, error) {
-    Lynx.Log("An error was encountered in "+file+" at line "+line+":"+position+". \""+error+"\"", "Error");
-    Lynx.Emit("Core.Error", this);
-};

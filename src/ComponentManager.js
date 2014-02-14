@@ -8,7 +8,6 @@
 *    ------------------------------------------------------
 *    File Name: ComponentManager.js
 *    Description: The component loader/manager for lynx
-*    Note: Is this really necesarry? Consider moving into core.
 *    Global Variables: Lynx.ComponentManager{}, Lynx.CM{}
 */
 
@@ -19,7 +18,12 @@ Lynx.ComponentManager = (function(){
 	var loadTotal = 0;
 	var loaded = 0;
 
-	that.Load = function()
+	/** Description: Loads the given components to the manager
+	*
+	* @this {Lynx.ComponentManager}
+	* @param {String[]} <arguments[]> Component names to load: (filename).js
+	*/
+	that.Load = (function()
 	{
 		loadTotal += arguments.length;
 		
@@ -27,13 +31,29 @@ Lynx.ComponentManager = (function(){
 		{
 			load(Lynx.Filepath + "components/" + arguments[i] + ".js");
 		}
-	}
+	}).bind(that);
 
-	that.Get = function(pComponentName)
+	/** Description: Fetches the given component or false.
+	*
+	* @this {Lynx.ComponentManager}
+	* @param {String} <pComponentName> Name of component to load
+	* @return {Lynx.Component||bool} Component object or false if not in manager.
+	*/
+	that.Get = (function(pComponentName)
 	{
-		return components[pComponentName];
-	}
+		if(typeof components[pComponentName] == 'undefined')
+			return false;
 
+		return components[pComponentName];
+	}).bind(that);
+
+	/** Description: Registers the component object with the name to the manager
+	*
+	* @this {Lynx.ComponentManager}
+	* @param {String} <pComponentName> name to reference the component by.
+	* @param {Lynx.Component} <pComponentObject> component to register
+	* @return {bool} Whether registration was successful or not.
+	*/
 	that.Register = function(pComponentName, pComponentObject)
 	{
 		if(typeof components[pComponentName] != 'undefined')
@@ -44,8 +64,14 @@ Lynx.ComponentManager = (function(){
 
 		components[pComponentName] = pComponentObject;
 		Lynx.Emit("ComponentManager.Register", pComponentObject);
+		return true;
 	}
 
+	/** Description: Loads the given component
+	*
+	* @this {LynxLibrary}
+	* @param {String} <pFilepath> location of the component to load
+	*/
 	function load(pFilepath)
 	{
 		var c = document.createElement("script");
@@ -56,6 +82,11 @@ Lynx.ComponentManager = (function(){
 		document.body.appendChild(c);
 	}
 
+	/** Description: The callback for a component file to finish loading.
+	*
+	* @this {LynxLibrary}
+	* @param {window.event} <event> window event object.
+	*/
 	function onload(event)
 	{
 		loaded++;

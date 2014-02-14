@@ -13,12 +13,18 @@
 
 Lynx.EventListener = function(){
 	var that = {};
-	//Private Variables
-	var events = [];
-	//Properties
 
-	//Public Methods
-	that.Notify = function(pEvent, pSender)
+	var events = [];
+
+	/**
+	* Description: Notifies the given listener of the event
+	*
+	* @this {Lynx.EventListener}
+	* @param {String} <pEvent> name of event to notify of
+	* @param {Object} <pSender> object that is sending the event.
+	* @return {bool} Whether to allow the next event to be notified [Acts as handled = !return]
+	*/
+	that.Notify = (function(pEvent, pSender)
 	{
 		if(typeof events[pEvent] == 'undefined')
 			return true;
@@ -26,22 +32,25 @@ Lynx.EventListener = function(){
 		var notifyNext = true;
 		for(var i = 0; i < events[pEvent].length && notifyNext; i++)
 			notifyNext = events[pEvent][i](pSender);
-		return notifyNext;
-	};
 
-	that.On = function(pEvent, pCallback)
+		return notifyNext;
+	}).bind(that);
+
+	/**
+	* Description: Subscribes listener to the given event using the provided callback
+	*
+	* @this {Lynx.EventListener}
+	* @param {String} <pEvent> name of event to notify on
+	* @param {Callback} <pCallback> callback to execute on the given event
+	*/	
+	that.On = (function(pEvent, pCallback)
 	{
 		if(typeof events[pEvent] == 'undefined')
 			events[pEvent] = [];
 
 		events[pEvent].push(pCallback.bind(that));
 		Lynx.Emitter.Subscribe(pEvent, that);
-	};
-
-	that.Define = function(pEvent)
-	{
-		Lynx.Emitter.Define(pEvent);
-	};
+	}).bind(that);
 
 	return that;
 };

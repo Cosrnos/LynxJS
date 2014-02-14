@@ -59,16 +59,16 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 	*
 	* @this {Lynx.Canvas}
 	*/
-	that.Update = function()
+	that.Update = (function()
 	{ 
 		buffer.getContext("2d").clearRect(0, 0, buffer.width, buffer.height);
-		that.Ctx("2d").clearRect(0,0,that.Width, that.Height);
+		this.Ctx("2d").clearRect(0,0,this.Width, this.Height);
 		for(var i = 0; i < elements.length; i++)
 			elements[i].Draw(buffer);
 
 		this.Ctx("2d").drawImage(buffer,0,0);
 		return true;
-	};
+	}).bind(that);
 
 	/**
 	* Description: Adds the canvas element to the canvas
@@ -117,7 +117,7 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 	*/	
 	function onRequestAnimationFrame(pSender)
 	{
-		return this.Update();
+		return that.Update();
 	}
 
 	return that;

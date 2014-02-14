@@ -13,31 +13,34 @@
 
 Lynx.Object = function(){
 	var that = {};
-	//Private Variables
-	var events = [];
-	//Properties
 
-	//Public Methods
-	that.Notify = function(pEvent, pSender)
+	var _eventlistener = new Lynx.EventListener();
+
+	/**
+	* Description: Notifies the EventListener of the event
+	*
+	* @this {Lynx.Object}
+	* @param {String} <pEvent> name of event to notify of
+	* @param {Object} <pSender> object that is sending the event.
+	* @return {bool} Whether to allow the next event to be notified [Acts as handled = !return]
+	*/
+	that.Notify = (function(pEvent, pSender)
 	{
-		if(typeof events[pEvent] == 'undefined')
-			return true;
+		return _eventlistener.Notify(pEvent, pSender);
+	}).bind(that);
 
-		var notifyNext = true;
-		for(var i = 0; i < events[pEvent].length && notifyNext; i++)
-			notifyNext = events[pEvent][i](pSender, that);
-		return notifyNext;
-	};
-
-	that.On = function(pEvent, pCallback)
+	/**
+	* Description: Subscribes the EventListener to the given event using the provided callback
+	*
+	* @this {Lynx.Object}
+	* @param {String} <pEvent> name of event to notify on
+	* @param {Callback} <pCallback> callback to execute on the given event	
+	*/
+	that.On = (function(pEvent, pCallback)
 	{
-		if(typeof events[pEvent] == 'undefined')
-			events[pEvent] = [];
+		_eventlistener.On(pEvent, pCallback.bind(this));
+	}).bind(that);
 
-		events[pEvent].push(pCallback.bind(that));
-		Lynx.Emitter.Subscribe(pEvent, that);
-	};
-	//Internal Methods
 	Lynx.Emit("Object.Create", that);
 	return that;
 };
