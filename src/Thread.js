@@ -40,7 +40,7 @@ Lynx.Thread = function(pName){
 	*/
 	that.Start = (function(pInterval)
 	{
-		pInterval = pInterval || (1000/6)
+		pInterval = pInterval || (1000/60)
 		if(intervId == null)
 		{
 			that.Delta = 0;
