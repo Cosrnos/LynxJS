@@ -80,6 +80,9 @@ function LynxLibrary ()
 		load(this.Filepath + "CanvasElement.js");
 		load(this.Filepath + "Thread.js");
 		load(this.Filepath + "Animator.js");
+		//Load Geometry classes. Possibly optional in the future.
+		load(this.Filepath + "Point.js");
+		load(this.Filepath + "Line.js");
 	}).bind(that);
 
 	/**
