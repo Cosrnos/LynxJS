@@ -6,8 +6,8 @@
 *    License. Please read license.txt for more information
 *    on usage of this library.
 *    ------------------------------------------------------
-*    File Name: Point.js
-*    Description: A point in the Lynx Map. Not neccesarily related to a canvas object.
+*    File Name: Rectangle.js
+*    Description: A Rectangle shape.
 *    Notes: The given point (pX, pY) is always the TOP LEFT point, just like any other object in HTML5
 *    Global Variables: Lynx.Rectangle, Lynx.Rect
 */
