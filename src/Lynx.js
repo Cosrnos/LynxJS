@@ -83,6 +83,7 @@ function LynxLibrary ()
 		//Load Geometry classes. Possibly optional in the future.
 		load(this.Filepath + "Point.js");
 		load(this.Filepath + "Line.js");
+		load(this.Filepath + "Rectangle.js");
 	}).bind(that);
 
 	/**
