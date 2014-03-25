@@ -56,6 +56,9 @@ Lynx.Line = function(pA, pB){
 	*/		
 	Object.defineProperty(that, "Intercept", {
 		get: function(){
+			if(this.Slope === Infinity)
+				return 0; //Default to 0 bc impossible.
+
 			return (this.A.Y - (this.Slope * this.A.X));
 		}
 	})
@@ -92,8 +95,13 @@ Lynx.Line = function(pA, pB){
 		}
 
 		//Definitely in bounds, now let's make sure it's on the line itself.
+		if(this.Slope === Infinity)
+			return pPoint.X == this.A.X;
+
 		return (pPoint.Y == (this.Slope * pPoint.X + this.Intercept));
 	}).bind(that);
+
+	return that;
 }
 
-Lynx.L = function(pX, pY){ return Lynx.Line(pX, pY); }
+Lynx.L = function(pA, pB){ return Lynx.Line(pA, pB); }
