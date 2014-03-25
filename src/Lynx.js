@@ -68,22 +68,24 @@ function LynxLibrary ()
 
 	var loadCore = (function()
 	{
-		//Load all files
-		load(this.Filepath + "Logger.js");
-		load(this.Filepath + "EventEmitter.js");
-		load(this.Filepath + "EventListener.js");
-		load(this.Filepath + "Object.js");
-		load(this.Filepath + "Component.js");
-		load(this.Filepath + "ComponentManager.js");
-		load(this.Filepath + "AssetManager.js");
-		load(this.Filepath + "Canvas.js");
-		load(this.Filepath + "CanvasElement.js");
-		load(this.Filepath + "Thread.js");
-		load(this.Filepath + "Animator.js");
-		//Load Geometry classes. Possibly optional in the future.
-		load(this.Filepath + "Point.js");
-		load(this.Filepath + "Line.js");
-		load(this.Filepath + "Rectangle.js");
+		//Load base files
+		load("Logger.js");
+		load("EventEmitter.js");
+		load("EventListener.js");
+		load("Object.js");
+		load("Component.js");
+		load("ComponentManager.js");
+		load("AssetManager.js");
+		load("Canvas.js");
+		load("CanvasElement.js");
+		load("Thread.js");
+		load("Animator.js");
+
+		//Load Geometry classes.
+		load("Geometry/Point.js");
+		load("Geometry/Line.js");
+		load("Geometry/Rectangle.js");
+		load("Geometry/Circle.js");
 	}).bind(that);
 
 	/**
@@ -153,14 +155,16 @@ function LynxLibrary ()
 	*
 	* @this {LynxLibrary}
 	* @param {String} <pFilepath> location of the file to load
+	* @param {bool} <pUseDefault> whether to append the base filepath to the beginning of the provided file
 	*/
-	var load = (function(pFilepath)
+	var load = (function(pFilepath, pUseDefault)
 	{
+		pUseDefault = pUseDefault || true;
 		var c = document.createElement("script");
 		c.type = "text/javascript";
 		c.async = false;
 		c.addEventListener("load", loadCallback.bind(this), false);
-		c.src = pFilepath;
+		c.src = this.Filepath + pFilepath;
 		document.body.appendChild(c);
 		loadTotal++;
 	}).bind(that);
