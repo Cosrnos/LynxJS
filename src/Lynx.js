@@ -68,24 +68,29 @@ function LynxLibrary ()
 
 	var loadCore = (function()
 	{
-		//Load base files
-		load("Logger.js");
-		load("EventEmitter.js");
-		load("EventListener.js");
-		load("Object.js");
-		load("Component.js");
-		load("ComponentManager.js");
-		load("AssetManager.js");
-		load("Canvas.js");
-		load("CanvasElement.js");
-		load("Thread.js");
-		load("Animator.js");
+		//Core
+		load("core/EventEmitter.js");
+		load("core/EventListener.js");		
+		load("core/Object.js");
+		load("core/Logger.js");
+		load("core/Component.js");
+		load("core/ComponentManager.js");
+		load("core/AssetManager.js");
+		load("core/Thread.js");
+		load("core/Quadtree.js");
 
 		//Load Geometry classes.
-		load("Geometry/Point.js");
-		load("Geometry/Line.js");
-		load("Geometry/Rectangle.js");
-		load("Geometry/Circle.js");
+		load("geometry/Point.js");
+		load("geometry/Line.js");
+		load("geometry/Rectangle.js");
+		load("geometry/Circle.js");
+
+		//Load Visual classes.
+		load("gfx/Animator.js");
+		load("gfx/Canvas.js");
+		load("gfx/CanvasElement.js");
+		load("gfx/QuadCanvas.js");
+
 	}).bind(that);
 
 	/**

@@ -15,6 +15,7 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 	var that = new Lynx.Object();
 	
 	//Private Variables
+	//THE CANVAS BUFFER IS NOW MARKED AS DEPRECIATED. BUFFERING IS NOW HANDLED WHEN TRANSLATING LAYERS TO THE VIEWPORT
 	var buffer = document.createElement("canvas");
 	buffer.width = pWidth;
 	buffer.height = pHeight;
