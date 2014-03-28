@@ -134,7 +134,7 @@
 			window.addEventListener("load",function load(event){
 				Lynx.LogTarget = "console";
 				Lynx.Load(function(){
-					Viewport = new Lynx.C("viewport","viewport-container",800,450);
+					Viewport = new Lynx.Viewport("viewport-container");
 
 					Lynx.CM.On("ComponentManager.Ready",function(cm){	
 						Lynx.Start();
@@ -268,7 +268,7 @@
 			<a href="/" id="logo">LynxJS</a>
 		</header>
 		<h2 style="border-top: 8px solid #df8349; border-radius: 15px 15px 0px 0px;">Viewport</h2>
-		<div id="viewport-container" width="100%" height="100%">
+		<div id="viewport-container" width="800" height="450">
 		</div>
 		<h2>Console</h2>
 		<div id="console-container" width="600" height="300">

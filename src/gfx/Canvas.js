@@ -11,28 +11,17 @@
 *    Global Variables: Lynx.Canvas()
 */
 
-Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
+Lynx.Canvas = function(pWidth, pHeight){
 	var that = new Lynx.Object();
 	
 	//Private Variables
-	//THE CANVAS BUFFER IS NOW MARKED AS DEPRECIATED. BUFFERING IS NOW HANDLED WHEN TRANSLATING LAYERS TO THE VIEWPORT
-	var buffer = document.createElement("canvas");
-	buffer.width = pWidth;
-	buffer.height = pHeight;
 
-	var _c = document.createElement("canvas");
-	_c.id = pId;
-	_c.width = pWidth;
-	_c.height = pHeight;
-	document.getElementById(pParent).appendChild(_c);
+	var canvas = document.createElement("canvas");
+	canvas.width = pWidth;
+	canvas.height = pHeight;
 
-	var canvas = document.getElementById(pId);
-
-	that.Width = pWidth;
-	that.Height = pHeight;
-	that.Parent = document.getElementById(pParent);
-	that.Id = pId;
-
+	Object.defineProperty(that, "Width", { get: function(){ return canvas.width; } });
+	Object.defineProperty(that, "Height", { get: function(){ return canvas.height; } });
 
 	var elements = [];
 
@@ -42,7 +31,7 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 	* @this {Lynx.Canvas}
 	* @return {HTMLCanvasElement} The direct canvas element
 	*/	
-	that.Element = function(){ return canvas; }
+	Object.defineProperty(that, "Element", { get: function(){ return canvas; } });
 
 	/**
 	* Description: Gets the HTMLCanvasElement Context
@@ -62,12 +51,10 @@ Lynx.Canvas = function(pId, pParent, pWidth, pHeight){
 	*/
 	that.Update = (function()
 	{ 
-		buffer.getContext("2d").clearRect(0, 0, buffer.width, buffer.height);
-		this.Ctx("2d").clearRect(0,0,this.Width, this.Height);
+		this.Ctx("2d").clearRect(0, 0, this.Width, this.Height);
 		for(var i = 0; i < elements.length; i++)
-			elements[i].Draw(buffer);
+			elements[i].Draw(canvas);
 
-		this.Ctx("2d").drawImage(buffer,0,0);
 		return true;
 	}).bind(that);
 

@@ -62,6 +62,7 @@ Lynx.Animator = (function(pName){
 		this.Delta = Date.now() - lastUpdate;
 		Lynx.Emit("_requestAnimationFrame"+this.Name, this);
 		Lynx.Emit("requestAnimationFrame", this);
+		Lynx.Emit("afterRequestAnimationFrame", this);
 		lastUpdate = Date.now();
 	}).bind(that);
 

@@ -30,6 +30,7 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	{
 		pBuffer.getContext("2d").fillStyle = "#ffffff";
 		pBuffer.getContext("2d").fillRect(this.X, this.Y, this.Width, this.Height); 
+		return true;
 	}).bind(that);
 
 	//Event Callbacks

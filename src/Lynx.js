@@ -90,6 +90,7 @@ function LynxLibrary ()
 		load("gfx/Canvas.js");
 		load("gfx/CanvasElement.js");
 		load("gfx/QuadCanvas.js");
+		load("gfx/Viewport.js");
 
 	}).bind(that);
 
