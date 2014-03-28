@@ -84,6 +84,7 @@ function LynxLibrary ()
 		load("geometry/Line.js");
 		load("geometry/Rectangle.js");
 		load("geometry/Circle.js");
+		load("geometry/Matrix.js");
 
 		//Load Visual classes.
 		load("gfx/Animator.js");
