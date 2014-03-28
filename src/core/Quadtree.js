@@ -11,16 +11,22 @@
 *    Global Variables: Lynx.Quadtree
 */
 
-Lynx.Quadtree = function(pIndex, pLimit, pBounds){
+Lynx.Quadtree = function(pIndex, pLimit, pMax, pBounds){
 	var that = {};
 
 	var objects = [];
 	var nodes = [];
 	var index = pIndex || 0;
-	var limit = pLimit || 1;
+	var limit = pLimit || 4;
+	var max = pMax || 2;
 
 	that.Bounds = pBounds;
 
+	/**
+	* Description: Splits the Quadtree into 4 separate nodes.
+	*
+	* @this {Lynx.Quadtree}
+	*/	
 	that.Split = function()
 	{
 		//We're assuming that the split is forced since the check for limit is already checked in the insert method.
@@ -39,6 +45,12 @@ Lynx.Quadtree = function(pIndex, pLimit, pBounds){
 			this.Insert(tempObjects[i]);
 	}
 
+	/**
+	* Description: Inserts the object into the quadtree.
+	*
+	* @this {Lynx.Quadtree}
+	* @param {Lynx.Rectangle} <pObject> the object to place into the tree.
+	*/	
 	that.Insert = function(pObject)
 	{
 		if(typeof nodes[0] != 'undefined')
@@ -54,16 +66,33 @@ Lynx.Quadtree = function(pIndex, pLimit, pBounds){
 		}
 
 		objects.push(pObject);
+		if(this.objects.length > limit && index < max)
+			this.Split();
 	}
 
+	/**
+	* Description: Clears all objects and nodes.
+	*
+	* @this {Lynx.Quadtree}
+	*/	
 	that.Clear = function()
 	{
 		objects = [];
+
 		if(typeof nodes[0] != 'undefined')
 			for(var i = 0; i < 4; i++)
 				nodes[i].Clear();
+
+		nodes = [];
 	}
 
+	/**
+	* Description: Splits the Quadtree into 4 separate nodes.
+	*
+	* @this {Lynx.Quadtree}
+	* @param {Lynx.Rectangle} <pRect> An object to find the index of.
+	* @return {int} Index of the node containing the object. If the object cannot be completely contained within the node, -1 is returned.
+	*/	
 	that.FindIndex = function(pRect)
 	{
 		if(typeof nodes[0] == 'undefined')
@@ -78,11 +107,24 @@ Lynx.Quadtree = function(pIndex, pLimit, pBounds){
 		return -1;
 	}
 
+	/**
+	* Description: Checks whether the object can be contained within the node's bounds.
+	*
+	* @this {Lynx.Quadtree}
+	* @param {Lynx.Rectangle} <pRect> The object to test
+	* @return {bool} if the node can contain the object.
+	*/	
 	that.Contains = function(pRect)
 	{
 		return (this.Bounds.X <= pRect.X && this.Bounds.Y <= pRect.Y && this.Bounds.Width >= pRect.Width && this.Bounds.Height >= pRect.Height);
 	}
 
+	/**
+	* Description: Returns all objects and objects of child nodes.
+	*
+	* @this {Lynx.Quadtree}
+	* @return {Lynx.Rectangle[]} an array containing all objects in the quadtree.
+	*/
 	that.GetAllObjects = function()
 	{
 		var toReturn = objects;
@@ -93,6 +135,15 @@ Lynx.Quadtree = function(pIndex, pLimit, pBounds){
 		return toReturn;
 	}
 
+	/**
+	* Description: Returns all objects contained within the bounds of the given rectangle
+	*
+	* Remarks: Should probably be reworked to return all objects collidding with the given rectangle.
+	*
+	* @this {Lynx.Quadtree}
+	* @param {Lynx.Rectangle} <pRect> The bounds of the area to find objects within.
+	* @return {Lynx.Rectangle[]} an array containing all objects in the given area.
+	*/
 	that.GetInRegion = function(pRect)
 	{
 		var toReturn = [];
