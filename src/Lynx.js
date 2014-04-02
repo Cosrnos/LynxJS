@@ -89,6 +89,7 @@ function LynxLibrary ()
 
 		//Load Visual classes.
 		load("gfx/Animator.js");
+		load("gfx/Renderer.js");
 		load("gfx/Canvas.js");
 		load("gfx/CanvasElement.js");
 		load("gfx/QuadCanvas.js");
@@ -161,6 +162,11 @@ function LynxLibrary ()
 		});
 	}).bind(that);
 
+	/**
+	* Description: Detects whether WebGL or 2D Canvas rendering should be used.
+	*
+	* @this {LynxLibrary}
+	*/
 	var detectGL = (function()
 	{
 		if(!(window.WebGLRenderingContext)) //Context doesn't exist, fallback to 2D.
