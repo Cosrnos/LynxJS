@@ -26,10 +26,9 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	* @this {Lynx.CanvasElement}
 	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	*/
-	that.Draw = (function(pBuffer)
+	that.Draw = (function(pRenderer)
 	{
-		pBuffer.getContext("2d").fillStyle = "#ffffff";
-		pBuffer.getContext("2d").fillRect(this.X, this.Y, this.Width, this.Height); 
+		pRenderer.Render(this);
 		return true;
 	}).bind(that);
 

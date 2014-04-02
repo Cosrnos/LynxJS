@@ -51,9 +51,16 @@ Lynx.Canvas = function(pWidth, pHeight){
 	*/
 	that.Update = (function()
 	{ 
-		this.Ctx("2d").clearRect(0, 0, this.Width, this.Height);
+		this.Renderer.Clear();
+
+		if(Lynx.DefaultContext != '2d')
+		{
+			this.Renderer.Render(elements);
+			return true;
+		}
+
 		for(var i = 0; i < elements.length; i++)
-			elements[i].Draw(canvas);
+			elements[i].Draw(this.Renderer);
 
 		return true;
 	}).bind(that);
@@ -87,6 +94,18 @@ Lynx.Canvas = function(pWidth, pHeight){
 	}
 
 	/**
+	* Description: Changes the internal canvas element to the element provided. Should only be used for webGL context switching
+	* 
+	* @this {Lynx.Canvas}
+	* @param {Document.CanvasElement}
+	*/
+	that.__setElement = (function(pElement)
+	{
+		canvas = pElement;
+		this.Renderer.RefreshContext();
+	}).bind(that);
+
+	/**
 	* Description: Vertically and horizontally centers the provided image on the canvas
 	*
 	* @this {Lynx.Canvas}
@@ -94,7 +113,8 @@ Lynx.Canvas = function(pWidth, pHeight){
 	*/	
 	that.CenterImage = (function(pImage)
 	{
-		this.Ctx("2d").drawImage(pImage, Math.floor((this.Width-pImage.width)/2), Math.floor((this.Height-pImage.height)/2));
+		if(Lynx.DefaultContext == "2d")
+			this.Ctx("2d").drawImage(pImage, Math.floor((this.Width-pImage.width)/2), Math.floor((this.Height-pImage.height)/2));
 	}).bind(that);
 
 	/**
@@ -107,6 +127,10 @@ Lynx.Canvas = function(pWidth, pHeight){
 	{
 		return that.Update();
 	}
+
+
+	//Attach the renderer before returning
+	that.Renderer = new Lynx.Renderer(that);
 
 	return that;
 };
