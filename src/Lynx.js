@@ -33,6 +33,7 @@ function LynxLibrary ()
 	that.LogTarget = "";
 	that.Main = {};
 	that.Paused = false;
+	that.DefaultContext = "2d"; //Set later in detectGL
 
 	/**
 	* Description: Loads the Lynx JS Library
@@ -141,6 +142,9 @@ function LynxLibrary ()
 		    Lynx.Log("An error was encountered in "+file+" at line "+line+":"+position+". \""+error+"\"", "Error");
 		    Lynx.Emit("Core.Error", this);
 		};
+		
+		//Graphics
+		detectGL();
 
 		//Threads
 		this.Main = new Lynx.Thread("Main");
@@ -155,6 +159,30 @@ function LynxLibrary ()
 				Lynx.Paused = true;
 			}
 		});
+	}).bind(that);
+
+	var detectGL = (function()
+	{
+		if(!(window.WebGLRenderingContext)) //Context doesn't exist, fallback to 2D.
+			return;
+
+		var contextNames = ["webgl", "experimental-webgl"];
+		var ctx = null;
+		for(var i = 0; i < contextNames.length; i++)
+		{
+			try
+			{
+				//quick test canvas
+				var c = document.createElement("canvas");
+				ctx = c.getContext(contextNames[i]);
+			}
+			catch(ex){ }
+			if(ctx)
+			{
+				this.DefaultContext = contextNames[i];
+				break;				
+			}
+		}
 	}).bind(that);
 
 	/**
