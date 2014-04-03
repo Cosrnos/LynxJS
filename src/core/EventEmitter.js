@@ -54,8 +54,6 @@ Lynx.EventEmitter = function(){
 			//Assume the event was interrupted
 			this.Notify(pEvent+".Break", this);
 		}
-
-		this.Notify("EventEmitter.Subscribe",this);
 	}).bind(that);
 
 	/**
