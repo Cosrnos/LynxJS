@@ -26,6 +26,14 @@ Lynx.Renderer = function(pCanvas){
 			that.__refreshGL();
 	}
 
+	that.AddShader = function(pShader)
+	{
+		if(shaders.hasOwnProperty(pShader.Name))
+			return false;
+
+		shaders[pShader.Name] = pShader;
+	}
+
 	if(Lynx.DefaultContext == "2d")
 	{
 		//Bind the 2d Canvas Methods
@@ -50,87 +58,124 @@ Lynx.Renderer = function(pCanvas){
 	{
 		//Bind the WebGL Methods and initialize
 		var gl = context; //Just to make things easier
-		buffer = null;
+		var buffer = null;
 		var positionLocation = 0;
 		var resolutionLocation = null;
 		var colorLocation = null;
+		var programs = [];
+		var program = null; //the one in use at the moment.
+		var shaders = [];
+		var ready = false;
 
-		var vertexShader = [
-			"attribute vec2 a_position;",
-			"uniform vec2 u_resolution;",
-			"void main(){",
-			"    gl_Position = vec4((a_position / u_resolution * 2.0 - 1.0) * vec2(1.0, -1.0), 0.0, 1.0);",
-			"}"
-		].join("\n");
-		var fragmentShader = [
-			"precision mediump float;",
-//			"uniform vec4 u_color;",
-			"void main(){",
-			" gl_FragColor = vec4(1, 1, 1, 1);",
-			"}"
-		].join("\n");
+		that.__refreshGL = function()
+		{
+			gl = context;
+			gl.viewport(0, 0, that.Parent.Width, that.Parent.Height);
+			
+			//Clear current programs and shaders.
+			shaders = [];
+			programs = [];
+
+			that.LoadShader("vs-default", function(pName){
+				that.LoadShader("fs-default", function(pSecName){
+					var vertexShader = that.CompileShader(pName);					
+					var fragmentShader = that.CompileShader(pSecName);
+					program = that.CompileProgram(vertexShader, fragmentShader);
+
+					if(!program)
+						return false;
+					gl.useProgram(program);
+
+					//TODO: Variable Positions Dynamically applied.
+					positionLocation = gl.getAttribLocation(program, "a_position");
+					colorLocation = gl.getUniformLocation(program, "u_color");
+					resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+
+					gl.uniform2f(resolutionLocation, this.Parent.Width, this.Parent.Height);
+
+					buffer = gl.createBuffer();
+					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+					gl.enableVertexAttribArray(positionLocation);
+					gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+					Lynx.Log("Finished loading shaders...");
+				});
+			});
+		}
 
 		that.Clear = function(){
 			gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 		};
 
-		that.CompileProgram = function(pGl, pVertexSrc, pFragmentSrc)
+		that.LoadShader = function(pName, pLoadCallback)
 		{
-			var program = pGl.createProgram();
+			if(document.getElementById("lynx-shader-"+pName) != null)
+				return;
 
-			var vertexShader = pGl.createShader(pGl.VERTEX_SHADER);
-			pGl.shaderSource(vertexShader, pVertexSrc);
-			pGl.compileShader(vertexShader);
+			var script = document.createElement("script");
+			script.id = "lynx-shader-"+pName;
+			script.type = "text/javascript";
+			script.async = false;
 
-			var compiled = pGl.getShaderParameter(vertexShader, pGl.COMPILE_STATUS);
-			if(!compiled)
-			{
-				    lastError = pGl.getShaderInfoLog(vertexShader);
-				    Lynx.Log("*** Error compiling shader '" + vertexShader + "':" + lastError);
-    				pGl.deleteShader(vertexShader);
-    				return;
-			}
+			script.addEventListener("load", function(){
+				Lynx.Log("Loaded shader '"+pName+"'");
+				pLoadCallback.bind(that)(pName);
+			}, false);
 
-			var fragmentShader = pGl.createShader(pGl.FRAGMENT_SHADER);
-			pGl.shaderSource(fragmentShader, pFragmentSrc);
-			pGl.compileShader(fragmentShader);
+			script.src = Lynx.Filepath+"shaders/"+pName+".js";
+			document.body.appendChild(script);
+		}
 
-			var compiled = pGl.getShaderParameter(fragmentShader, pGl.COMPILE_STATUS);
-			if(!compiled)
-			{
-				    lastError = pGl.getShaderInfoLog(fragmentShader);
-				    Lynx.Log("*** Error compiling shader '" + fragmentShader + "':" + lastError);
-    				pGl.deleteShader(fragmentShader);
-    				return;
-			}
-
-			pGl.attachShader(program, vertexShader);
-			pGl.attachShader(program, fragmentShader);
-			pGl.linkProgram(program);
-
-			if(!pGl.getProgramParameter(program, pGl.LINK_STATUS))
-			{
+		that.CompileShader = function(pName)
+		{
+			var shaderC = Lynx.Shaders.Get(pName);
+			if(!shaderC)
 				return false;
+
+			var shader = gl.createShader(((shaderC.Type == Lynx.Shaders.Type.Vertex) ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER));
+			gl.shaderSource(shader, shaderC.Compile());
+			gl.compileShader(shader);
+
+			var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+			if(!compiled)
+			{
+				var lastError = gl.getShaderInfoLog(shader);
+				Lynx.Error("Error compiling shader '" + pName + "': " + lastError);
+				gl.deleteShader(shader);
+				return;
 			}
 
-			pGl.useProgram(program);
+			shaders.push(shader);
+			return shader;
+		}
 
-			return program;
+		that.CompileProgram = function()
+		{
+			if(arguments.length < 2)
+			{
+				Lynx.Warning("Could not compile WebGL Program. At least one Vertex Shader and one Fragment Shader must be provided.");
+				return;
+			}
+
+			var tempProgram = gl.createProgram();
+
+			for(var ii = 0; ii < arguments.length; ii++)
+				gl.attachShader(tempProgram, arguments[ii]);
+
+			gl.linkProgram(tempProgram);
+			if(!gl.getProgramParameter(tempProgram, gl.LINK_STATUS))
+				return false;
+
+			programs.push(tempProgram);
+			return tempProgram;
 		}
 
 		that.Render = (function(pObject)
 		{
 			if(pObject.Render)
 				return pObject.Render(gl);
- 			
-			if(!that.__program)
-			{
-				console.log("Render error");
-				return;
-			}
-
 		
-		//	gl.uniform4f(colorLocation, 1.0, 1.0, 1.0, 1.0);
+			gl.uniform4f(colorLocation, 1.0, 1.0, 1.0, 1.0);
 
 			//sample only
 			var buildArray = [];
@@ -163,31 +208,6 @@ Lynx.Renderer = function(pCanvas){
 				x2, pY,
 				pX, pY
 				]);
-
-			//Lynx.Log("Drew rectangle at "+pX+","+pY);
-		}
-
-		that.__program = that.CompileProgram(gl, vertexShader, fragmentShader);
-
-		that.__refreshGL = function()
-		{
-			gl = context;
-			gl.viewport(0, 0, that.Parent.Width, that.Parent.Height);
-			that.__program = that.CompileProgram(gl, vertexShader, fragmentShader);
-			gl.useProgram(that.__program);
-
-			positionLocation = gl.getAttribLocation(that.__program, "a_position");
-		//	colorLocation = gl.getUniformLocation(that.__program, "u_color");
-			resolutionLocation = gl.getUniformLocation(that.__program, "u_resolution");
-
-			gl.uniform2f(resolutionLocation, this.Parent.Width, this.Parent.Height);
-		
-			buffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-			gl.enableVertexAttribArray(positionLocation);
-			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-			gl.useProgram(that.__program);
 		}
 
 		that.__refreshGL();

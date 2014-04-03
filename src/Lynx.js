@@ -89,6 +89,8 @@ function LynxLibrary ()
 
 		//Load Visual classes.
 		load("gfx/Animator.js");
+		load("gfx/Shaders.js");
+		load("gfx/ShaderComponent.js");
 		load("gfx/Renderer.js");
 		load("gfx/Canvas.js");
 		load("gfx/CanvasElement.js");
