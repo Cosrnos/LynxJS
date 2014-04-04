@@ -17,32 +17,23 @@ Lynx.Viewport = function(pId){
 	
 	var internalId = 1000 + Math.floor(Math.random()*8999);
 
-	var pageElement = new Lynx.Canvas(parent.clientWidth, parent.clientHeight);
-
-	if(Lynx.DefaultContext != "2d")
-		that.__setElement(pageElement.Element);
-
 	Object.defineProperty(that, "Id", { get: function(){ return "lynx-viewport-"+internalId; } });
 
 	//And just in case...
 	while(document.getElementById(that.Id) != null)
 		internalId = 1000 + Math.floor(Math.random()*8999);
 
-	pageElement.Element.id = that.Id;
+	that.Element.id = that.Id;
 
-	parent.appendChild(pageElement.Element);
-
-	pageElement.On("afterRequestAnimationFrame", function(pSender){
-		if(Lynx.DefaultContext == "2d")
-			pageElement.Ctx("2d").drawImage(that.Element, 0, 0);
-	});
+	parent.appendChild(that.Element);
 
 	that.ParseMousePosition = function(pX, pY)
 	{
-		var cPos = pageElement.Element.getBoundingClientRect();
+		var cPos = that.Element.getBoundingClientRect();
 		return {X: Math.floor(pX - cPos.left), Y: Math.floor(pY - cPos.top)};
 	}
 
+	that.Renderer.RefreshContext();
 
 	if(document.getElementById(that.Id) == null)
 		throw "Failed to bind Viewport to DOM Object with ID "+pId+". Either the object doesn't exist or something else is afoot.";

@@ -56,6 +56,17 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 		return "";
 	};
 
+	that.GetVariable = function(pName)
+	{
+		for(var i = 0; i < variables.length; i++)
+		{
+			if(variables[i].Name == pName)
+				return variables[i];
+		}
+
+		return false;
+	}
+
 	that.Compile = (function(){
 		var toReturn = [];
 
@@ -71,6 +82,25 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 
 		return toReturn.join("\n");
 	}).bind(that);
+
+	that.GetLocations = function(pGl, pProgram)
+	{
+		for(var v = 0; v < variables.length; v++)
+		{
+			switch(variables[v].DataType)
+			{
+				case that.VariableType.Uniform:
+					variables[v].Location = pGl.getUniformLocation(pProgram, "u_"+variables[v].Name);
+					break;
+				case that.VariableType.Varying:
+					variables[v].Location = pGl.getVaryingLocation(pProgram, "v_"+variables[v].Name);
+					break;
+				default:
+					variables[v].Location = pGl.getAttribLocation(pProgram, "a_"+variables[v].Name);
+					break;
+			}
+		}
+	}
 
 	function addVar(pAUV, pType, pName, pValue)
 	{
@@ -112,7 +142,8 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 			Name: pName,
 			Type: pType,
 			DataType: pAUV,
-			Value: pValue
+			Value: pValue,
+			Position: null
 		});
 	};
 
