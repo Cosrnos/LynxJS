@@ -199,14 +199,6 @@
 
 					Lynx.AM.QueueImage("samples/snow/assets/logo.png");
 
-					Lynx.AM.LoadQueue(function(){
-						var asset = Lynx.AM.Get("samples/snow/assets/logo.png");
-						if(asset)
-							Viewport.On("requestAnimationFrame", function(){
-								Viewport.CenterImage(asset.Asset);								
-							});
-					});
-
 					Viewport.On("AssetManager.Queue.Finish", function(){
 						Lynx.Log("Queue finished!");
 					});

@@ -59,12 +59,12 @@ Lynx.Renderer = function(pCanvas){
 		//Bind the WebGL Methods and initialize
 		var gl = context; //Just to make things easier
 		var buffer = null;
-		var positionLocation = 0;
-		var resolutionLocation = null;
-		var colorLocation = null;
-		var programs = [];
-		var program = null; //the one in use at the moment.
+		var program = null, //the one in use at the moment.
+			vertexShader = null,
+			fragmentShader = null;
+		
 		var shaders = [];
+
 		var ready = false;
 
 		that.__refreshGL = function()
@@ -73,30 +73,27 @@ Lynx.Renderer = function(pCanvas){
 			gl.viewport(0, 0, that.Parent.Width, that.Parent.Height);
 			
 			//Clear current programs and shaders.
-			shaders = [];
-			programs = [];
-
 			that.LoadShader("vs-default", function(pName){
 				that.LoadShader("fs-default", function(pSecName){
-					var vertexShader = that.CompileShader(pName);					
-					var fragmentShader = that.CompileShader(pSecName);
-					program = that.CompileProgram(vertexShader, fragmentShader);
+					program = that.CompileProgram(that.CompileShader(pName), that.CompileShader(pSecName));
 
 					if(!program)
 						return false;
+
 					gl.useProgram(program);
 
-					//TODO: Variable Positions Dynamically applied.
-					positionLocation = gl.getAttribLocation(program, "a_position");
-					colorLocation = gl.getUniformLocation(program, "u_color");
-					resolutionLocation = gl.getUniformLocation(program, "u_resolution");
+					vertexShader = Lynx.Shaders.Get(pName);
+					fragmentShader = Lynx.Shaders.Get(pSecName);
 
-					gl.uniform2f(resolutionLocation, this.Parent.Width, this.Parent.Height);
+					vertexShader.GetLocations(gl, program);
+					fragmentShader.GetLocations(gl, program);
+
+					gl.uniform2f(vertexShader.GetVariable("resolution").Location, this.Parent.Width, this.Parent.Height);
 
 					buffer = gl.createBuffer();
 					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-					gl.enableVertexAttribArray(positionLocation);
-					gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+					gl.enableVertexAttribArray(vertexShader.GetVariable("position").Location);
+					gl.vertexAttribPointer(vertexShader.GetVariable("position").Location, 2, gl.FLOAT, false, 0, 0);
 
 					Lynx.Log("Finished loading shaders...");
 				});
@@ -145,7 +142,6 @@ Lynx.Renderer = function(pCanvas){
 				return;
 			}
 
-			shaders.push(shader);
 			return shader;
 		}
 
@@ -166,16 +162,18 @@ Lynx.Renderer = function(pCanvas){
 			if(!gl.getProgramParameter(tempProgram, gl.LINK_STATUS))
 				return false;
 
-			programs.push(tempProgram);
 			return tempProgram;
 		}
 
 		that.Render = (function(pObject)
 		{
+			if(!vertexShader || !fragmentShader)
+				return false;
+
 			if(pObject.Render)
 				return pObject.Render(gl);
 		
-			gl.uniform4f(colorLocation, 1.0, 1.0, 1.0, 1.0);
+			gl.uniform4f(fragmentShader.GetVariable("color").Location, 1.0, 1.0, 1.0, 1.0);
 
 			//sample only
 			var buildArray = [];
@@ -209,8 +207,6 @@ Lynx.Renderer = function(pCanvas){
 				pX, pY
 				]);
 		}
-
-		that.__refreshGL();
 	}
 
 	return that;

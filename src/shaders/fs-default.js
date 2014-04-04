@@ -6,5 +6,10 @@
 		this.Main = function(){
 			return "gl_FragColor = u_color;";
 		};
+
+		this.SetColor = function(pGl, p1, p2, p3, p4)
+		{
+			var colorPosition = pGl.getUniformPosition()
+		}
 	});
 })();
