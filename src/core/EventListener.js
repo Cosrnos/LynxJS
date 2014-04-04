@@ -49,7 +49,9 @@ Lynx.EventListener = function(){
 			events[pEvent] = [];
 
 		events[pEvent].push(pCallback.bind(that));
-		Lynx.Emitter.Subscribe(pEvent, that);
+
+		if(events[pEvent].length === 1)
+			Lynx.Emitter.Subscribe(pEvent, that);
 	}).bind(that);
 
 	return that;
