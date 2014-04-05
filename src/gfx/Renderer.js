@@ -62,6 +62,7 @@ Lynx.Renderer = function(pCanvas){
 		var program = null, //the one in use at the moment.
 			vertexShader = null,
 			fragmentShader = null;
+		var lastShaderColor = null;
 		
 		var shaders = [];
 
@@ -172,8 +173,12 @@ Lynx.Renderer = function(pCanvas){
 
 			if(pObject.Render)
 				return pObject.Render(gl);
-		
-			gl.uniform4f(fragmentShader.GetVariable("color").Location, 1.0, 1.0, 1.0, 1.0);
+			
+			if(lastShaderColor != 0xFFFFFF)
+			{
+				gl.uniform4f(fragmentShader.GetVariable("color").Location, 1.0, 1.0, 1.0, 1.0);
+				lastShaderColor = 0xFFFFFF;
+			}
 
 			//sample only
 			var buildArray = [];
@@ -182,7 +187,7 @@ Lynx.Renderer = function(pCanvas){
 				pObject = [pObject];
 
 			for(var i = 0; i < pObject.length; i++)
-				buildArray = this.putRect(buildArray, pObject[i].X, pObject[i].Y, pObject[i].Width, pObject[i].Height);
+				this.putRect(buildArray, pObject[i].X, pObject[i].Y, pObject[i].Width, pObject[i].Height);
 
 			var errors = gl.getError();
 			if(errors)
@@ -198,14 +203,14 @@ Lynx.Renderer = function(pCanvas){
 			var x2 = pX + pWidth;
 			var y2 = pY + pHeight;
 
-			return pBuildArray.concat([
+			pBuildArray.push(
 				pX, pY,
 				pX, y2,
 				x2, y2,
 				x2, y2,
 				x2, pY,
 				pX, pY
-				]);
+				);
 		}
 	}
 

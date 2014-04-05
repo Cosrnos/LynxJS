@@ -125,7 +125,7 @@
 		</style>
 		<script type="text/javascript">
 			var size = 5;
-			var limit = 1000;
+			var limit = 5000;
 			var total = 0;
 			var timeTotal = 0;
 			var Viewport = {};
@@ -235,8 +235,10 @@
 
 			var addObject = function(pX, pY)
 			{
-				if(total++ > limit && typeof pX == 'undefined')
+				if(total+1 > limit && typeof pX == 'undefined')
 					return;
+
+				total++;
 
 				pX = pX || Math.floor(Math.random() * Viewport.Width);
 				pY = pY || -size;
