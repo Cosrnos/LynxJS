@@ -36,8 +36,7 @@ Lynx.Viewport = function(pId){
 	*/
 	that.ParseMousePosition = function(pX, pY)
 	{
-		var cPos = that.Element.getBoundingClientRect();
-		return {X: Math.floor(pX - cPos.left), Y: Math.floor(pY - cPos.top)};
+		return {X: Math.floor(pX - that.Element.offsetLeft), Y: Math.floor(pY - that.Element.offsetTop)};
 	}
 
 	that.Renderer.RefreshContext();
