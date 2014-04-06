@@ -29,6 +29,7 @@ function LynxLibrary ()
 	var onLibraryLoad = function(){ };
 
 	//Properties
+	that.Debug = true;
 	that.Filepath = "src/";
 	that.LogTarget = "";
 	that.Main = {};

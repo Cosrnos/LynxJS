@@ -125,7 +125,7 @@
 		</style>
 		<script type="text/javascript">
 			var size = 5;
-			var limit = 5000;
+			var limit = 1000;
 			var total = 0;
 			var timeTotal = 0;
 			var Viewport = {};
@@ -249,6 +249,8 @@
 				var left = Math.floor(Math.random() * 2) + 1;
 				ce.vx = (left === 1) ? -1 * ce.vx : ce.vx;
 				ce.vy = Math.floor(Math.random()*6) + 3;
+
+				ce.Color = 0xFFFFFF;
 
 				ce.On("Update", updateElement);
 				Viewport.AddElement(ce);

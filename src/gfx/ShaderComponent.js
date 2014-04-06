@@ -135,6 +135,9 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 				case "vec4":
 					pValue = [0,0,0];
 					break;
+				case "int":
+					pValue = 0;
+					break;
 			}
 		}
 

@@ -174,12 +174,6 @@ Lynx.Renderer = function(pCanvas){
 			if(pObject.Render)
 				return pObject.Render(gl);
 			
-			if(lastShaderColor != 0xFFFFFF)
-			{
-				gl.uniform4f(fragmentShader.GetVariable("color").Location, 1.0, 1.0, 1.0, 1.0);
-				lastShaderColor = 0xFFFFFF;
-			}
-
 			//sample only
 			var buildArray = [];
 
@@ -187,7 +181,19 @@ Lynx.Renderer = function(pCanvas){
 				pObject = [pObject];
 
 			for(var i = 0; i < pObject.length; i++)
+			{
+				if(lastShaderColor != pObject[i].Color)
+				{
+					//Draw this batch and switch colors
+					if(pObject[i].Color)
+						gl.uniform1i(fragmentShader.GetVariable("color").Location, pObject[i].Color);
+					//todo: else use texture.
+
+					lastShaderColor = pObject[i].Color;
+				}
+
 				this.putRect(buildArray, pObject[i].X, pObject[i].Y, pObject[i].Width, pObject[i].Height);
+			}
 
 			var errors = gl.getError();
 			if(errors)
