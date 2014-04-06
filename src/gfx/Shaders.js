@@ -20,6 +20,12 @@ Lynx.Shaders = (function(){
 		Fragment: 1
 	};
 
+	/**
+	* Description: Adds a shader to the Library.
+	*
+	* @this {Lynx.Shaders}
+	* @param {Lynx.ShaderComponent} <pShader> the shader to add
+	*/
 	that.Add = function(pShader)
 	{
 		if(shaders.hasOwnProperty(pShader.Name))
@@ -29,12 +35,26 @@ Lynx.Shaders = (function(){
 		Lynx.Emit("Shaders.Add", pShader);
 	}
 
+	/**
+	* Description: Removes a shader from the library
+	*
+	* @this {Lynx.Shaders}
+	* @param {string} <pName> the name of the shader to remove
+	*/
 	that.Remove = function(pName)
 	{
 		if(shaders.hasOwnProperty(pName))
 			shaders[pName] = null;
 	}
 
+
+	/**
+	* Description: Gets the requested shader
+	*
+	* @this {Lynx.Shaders}
+	* @param {string} <pName> the name of the shader to return
+	* @return {Lynx.ShaderComponent|bool} the shader component or false if it doesn't exist.
+	*/
 	that.Get = function(pName)
 	{
 		if(shaders.hasOwnProperty(pName))

@@ -124,12 +124,13 @@
 			}
 		</style>
 		<script type="text/javascript">
-			var size = 5;
+			var size = 3;
 			var limit = 1000;
 			var total = 0;
 			var timeTotal = 0;
 			var Viewport = {};
 			var state = 0;
+			var colors = [0xFF33CC, 0x33CCFF, 0xCCFF33, 0xCC33FF];
 
 			window.addEventListener("load",function load(event){
 				Lynx.LogTarget = "console";
@@ -160,32 +161,32 @@
 						//Good lord this needs to be optimized
 						if(total >= 25 && state == 0)
 						{
-							Lynx.Log("Welcome to your personal winter wonderland!");
+							Lynx.Log("Confetti makes everything better!");
 							state++;
 						}
 						else if(total >= 50 && state == 1)
 						{
-							Lynx.Log("It's starting to really come down!");
+							Lynx.Log("The party is just getting started!");
 							state++;
 						}
 						else if(total >= 80 && state == 2)
 						{
-							Lynx.Log("Brr!");
+							Lynx.Log("This is going to make a huge mess");
 							state++;
 						}
 						else if(total >= 250 && state == 3)
 						{
-							Lynx.Log("Oh the weather in here is frightful!");
+							Lynx.Log("This is the best birthday ever!");
 							state++;
 						}
 						else if(total >= 500 && state == 4)
 						{
-							Lynx.Log("So many snowflakes!");
+							Lynx.Log("Will it ever stop?");
 							state++;
 						}
 						else if(total >= 1000 && state == 5)
 						{
-							Lynx.Log("This is officially a blizzard!");
+							Lynx.Log("The entire neighborhood is covered in paper bits!");
 							state++;
 						}
 						else if(total >= limit && state == 6)
@@ -200,7 +201,6 @@
 					Lynx.AM.QueueImage("samples/snow/assets/logo.png");
 
 					Viewport.On("AssetManager.Queue.Finish", function(){
-						Lynx.Log("Queue finished!");
 					});
 				});
 			}, false);
@@ -250,7 +250,7 @@
 				ce.vx = (left === 1) ? -1 * ce.vx : ce.vx;
 				ce.vy = Math.floor(Math.random()*6) + 3;
 
-				ce.Color = 0xFFFFFF;
+				ce.Color = colors[Math.floor(Math.random() * colors.length)];
 
 				ce.On("Update", updateElement);
 				Viewport.AddElement(ce);

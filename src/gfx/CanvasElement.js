@@ -43,15 +43,38 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	});
 
 	/**
-	* Description: Updates the canvas object
-	*
+	* Description: Draws the object to the canvas with a provided 2d Context.
+	* 
+	* @remarks See Lynx.CanvasElement.GetVertices for the WebGL Default
 	* @this {Lynx.CanvasElement}
 	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	*/
-	that.Draw = (function(pRenderer)
+	that.Draw = (function(context)
 	{
-		pRenderer.Render(this);
+		context.fillRect(this.X, this.Y, this.Width, this.Height);
 		return true;
+	}).bind(that);
+
+	/**
+	* Description: Pushes the objects vertices to the given array to be drawn by the WebGL Context.
+	* 
+	* @remarks Only works with a rect
+	* @this {Lynx.CanvasElement}
+	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
+	*/
+	that.GetVertices = (function(pBuildArray)
+	{
+		var x2 = this.X + this.Width;
+		var y2 = this.Y + this.Height;
+
+		pBuildArray.push(
+				this.X, this.Y,
+				this.X, y2,
+				x2, y2,
+				x2, y2,
+				x2, this.Y,
+				this.X, this.Y
+			);
 	}).bind(that);
 
 	//Event Callbacks

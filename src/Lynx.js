@@ -29,12 +29,13 @@ function LynxLibrary ()
 	var onLibraryLoad = function(){ };
 
 	//Properties
-	that.Debug = true;
+	that.Debug = false;
 	that.Filepath = "src/";
 	that.LogTarget = "";
 	that.Main = {};
 	that.Paused = false;
-	that.DefaultContext = "2d"; //Set later in detectGL
+	that.DefaultContext = "2d";
+	that.DisableWebGL = false;
 
 	/**
 	* Description: Loads the Lynx JS Library
@@ -172,7 +173,7 @@ function LynxLibrary ()
 	*/
 	var detectGL = (function()
 	{
-		if(!(window.WebGLRenderingContext)) //Context doesn't exist, fallback to 2D.
+		if(!(window.WebGLRenderingContext) || Lynx.DisableWebGL) //Context doesn't exist, fallback to 2D.
 			return;
 
 		var contextNames = ["webgl", "experimental-webgl"];

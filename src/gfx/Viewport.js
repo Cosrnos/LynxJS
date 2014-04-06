@@ -27,6 +27,13 @@ Lynx.Viewport = function(pId){
 
 	parent.appendChild(that.Element);
 
+	/**
+	* Description: Returns the mouse position relative to the viewport origin
+	*
+	* @this {Lynx.Viewport}
+	* @param {int} <pX> The original mouse X position
+	* @param {int} <pY> The original mouse Y position
+	*/
 	that.ParseMousePosition = function(pX, pY)
 	{
 		var cPos = that.Element.getBoundingClientRect();

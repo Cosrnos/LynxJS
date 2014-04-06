@@ -19,6 +19,11 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 	that.Author = "";
 	that.Type = null;
 
+	/**
+	* Description: A custom prefix to append to the beginning of the shader.
+	*
+	* @this {Lynx.ShaderComponent}
+	*/
 	that.Prefix = "";
 
 	that.VariableType = {
@@ -36,26 +41,59 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 
 	var variables = [];
 
+	/**
+	* Description: Adds the given attribute to the dynamic shader.
+	*
+	* @this {Lynx.ShaderComponent}
+	* @param {string} <pType> The type of variable
+	* @param {string} <pName> The name of the variable to add.
+	*/
 	that.Attribute = function(pType, pName)
 	{
 		addVar("attribute", pType, pName);
 	}
 
+	/**
+	* Description: Adds the given uniform variable to the dynamic shader.
+	*
+	* @this {Lynx.ShaderComponent}
+	* @param {string} <pType> The type of variable
+	* @param {string} <pName> The name of the variable to add.
+	*/
 	that.Uniform = function(pType, pName)
 	{
 		addVar("uniform", pType, pName);
 	}
 
+	/**
+	* Description: Adds the given varying variable to the dynamic shader.
+	*
+	* @this {Lynx.ShaderComponent}
+	* @param {string} <pType> The type of variable
+	* @param {string} <pName> The name of the variable to add.
+	*/
 	that.Varying = function(pType, pName)
 	{
 		addVar("varying", pType, pName);
 	}
 
+	/**
+	* Description: Returns the main method of the dynamic shader
+	*
+	* @this {Lynx.ShaderComponent}
+	*/
 	that.Main = function()
 	{
 		return "";
 	};
 
+	/**
+	* Description: Returns the variable with the given name
+	*
+	* @this {Lynx.ShaderComponent}
+	* @param {string} <pName> The name of the variable to get
+	* @return {this.Variable{}|bool} the variable object or false if not found. 
+	*/
 	that.GetVariable = function(pName)
 	{
 		for(var i = 0; i < variables.length; i++)
@@ -67,6 +105,12 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 		return false;
 	}
 
+	/**
+	* Description: returns the precompiled shader
+	*
+	* @this {Lynx.ShaderComponent}
+	* @return {string} the full shader text
+	*/
 	that.Compile = (function(){
 		var toReturn = [];
 
@@ -83,6 +127,13 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 		return toReturn.join("\n");
 	}).bind(that);
 
+	/**
+	* Description: Populates the locations of each variable in the given program.
+	*
+	* @this {Lynx.ShaderComponent}
+	* @param {WebGLContext} <pGl> The canvas gl context
+	* @param {WebGLProgram} <pProgram> The program the variables lie in
+	*/
 	that.GetLocations = function(pGl, pProgram)
 	{
 		for(var v = 0; v < variables.length; v++)
@@ -102,6 +153,16 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 		}
 	}
 
+	/**
+	* Description: Adds a variable to the component.
+	*
+	* @internal
+	* @this {Lynx.ShaderComponent}
+	* @param {string} <pAUV> Uniform, attribute or Varying
+	* @param {string} <pType> The type of variable
+	* @param {string} <pName> The name of the variable to add
+	* @param {pType} <pValue> The value to assign to the variable
+	*/
 	function addVar(pAUV, pType, pName, pValue)
 	{
 		if(variables.indexOf(pName) != -1)

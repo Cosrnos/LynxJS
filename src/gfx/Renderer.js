@@ -20,54 +20,113 @@ Lynx.Renderer = function(pCanvas){
 	that.Parent = pCanvas;
 	var context = pCanvas.Ctx(Lynx.DefaultContext);
 
+	/**
+	* Description: Builds the rendering context and associated values
+	*
+	* @this {Lynx.Renderer}
+	*/
 	that.RefreshContext = function(){
 		context = that.Parent.Ctx(Lynx.DefaultContext);
-		if(Lynx.DefaultContext != "2d")
-			that.__refreshGL();
+
+		that.__refreshGL();
 	}
 
-	that.AddShader = function(pShader)
+	/**
+	* Description: The method called to sort the array objects for rendering optimization.
+	* 
+	* @this {Lynx.Renderer}
+	* @param {Lynx.CanvasElement} <pA> The first object
+	* @param {Lynx.CanvasElement} <pB> The second object
+	* @return {int} See array.prototype.sort for more info
+	*/
+	that.SortMethod = function(pA, pB)
 	{
-		if(shaders.hasOwnProperty(pShader.Name))
-			return false;
+		if(pA.Color == pB.Color)
+			return 0;
+		if(pA.Color > pB.Color)
+			return 1;
 
-		shaders[pShader.Name] = pShader;
-	}
+		return -1;
+	};
 
 	if(Lynx.DefaultContext == "2d")
 	{
-		//Bind the 2d Canvas Methods
+		var buffer = null,
+		ctx = null;
+
+		var lastFillColor = 0;
+		/**
+		* Description: Clears the 2d Canvas
+		*
+		* @this {Lynx.Renderer}
+		*/
 		that.Clear = function(){
-			context.clearRect(0,0, pCanvas.Width, pCanvas.Height);
+			ctx.clearRect(0,0, buffer.width, buffer.height);
+			context.clearRect(0,0, this.Parent.Width, this.Parent.Height);
 		};
 
-		that.SetColor = function(pColor)
+		/**
+		* Description: Renders the 2D Scene using the fallback canvas 2d context
+		*
+		* @this {Lynx.Renderer}
+		* @param {Lynx.CanvasElement[]} <pObject> the object(s) to render
+		*/
+		that.Render = function(pObject)
 		{
-			context.fillStyle = pColor;
-		};
+			if(!(pObject instanceof Array))
+				pObject = [pObject];
 
-		that.Shape = function(pShape)
-		{
-			if(typeof pShape.Width != 'undefined')
+			for(var i = 0; i < pObject.length; i++)
 			{
-				context.fillRect(pShape.X, pShape.Y, pShape.Width, pShape.Height);
+				if(pObject[i].FBRender)
+				{
+					pObject[i].FBRender(ctx);
+					continue;
+				}
+
+				if(lastFillColor != pObject[i].Color)
+				{
+					if(pObject[i].Color)
+						var newColor = "#"+pObject[i].Color.toString(16);
+						ctx.fillStyle = newColor;
+					
+					lastFillColor = pObject[i].Color;
+				}
+
+				pObject[i].Draw(ctx);
 			}
+			context.drawImage(buffer, 0, 0, buffer.width, buffer.height);
+		};
+
+		/**
+		* Description: Refreshes the internal context variables
+		*
+		* @this {Lynx.Renderer}
+		*/
+		that.__refreshGL = function()
+		{
+			buffer = document.createElement("canvas");
+			buffer.width = this.Parent.Width;
+			buffer.height = this.Parent.Height;
+			ctx = buffer.getContext("2d");
 		}
 	}
 	else
 	{
-		//Bind the WebGL Methods and initialize
-		var gl = context; //Just to make things easier
+		var gl = context;
 		var buffer = null;
-		var program = null, //the one in use at the moment.
+		var program = null,
 			vertexShader = null,
 			fragmentShader = null;
 		var lastShaderColor = null;
 		
-		var shaders = [];
-
 		var ready = false;
 
+		/**
+		* Description: Refreshes the WebGL program and shaders.
+		*
+		* @this {Lynx.Renderer}
+		*/
 		that.__refreshGL = function()
 		{
 			gl = context;
@@ -101,10 +160,22 @@ Lynx.Renderer = function(pCanvas){
 			});
 		}
 
+		/**
+		* Description: Clears the WebGL Buffers
+		*
+		* @this {Lynx.Renderer}
+		*/
 		that.Clear = function(){
 			gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
 		};
 
+		/**
+		* Description: Loads a dynamic webGL Shader then executes the provided callback
+		*
+		* @this {Lynx.Renderer}
+		* @param {string} <pName> Name of the dynamic shader to load
+		* @param {function<pShader>} A function to call when the shader is finished loading.
+		*/
 		that.LoadShader = function(pName, pLoadCallback)
 		{
 			if(document.getElementById("lynx-shader-"+pName) != null)
@@ -116,7 +187,9 @@ Lynx.Renderer = function(pCanvas){
 			script.async = false;
 
 			script.addEventListener("load", function(){
-				Lynx.Log("Loaded shader '"+pName+"'");
+				if(Lynx.Debug)
+					Lynx.Log("Loaded shader '"+pName+"'");
+				
 				pLoadCallback.bind(that)(pName);
 			}, false);
 
@@ -124,6 +197,13 @@ Lynx.Renderer = function(pCanvas){
 			document.body.appendChild(script);
 		}
 
+		/**
+		* Description: Compiles the given shader
+		*
+		* @this {Lynx.Renderer}
+		* @param {string} <pName> The name of the shader to compile
+		* @return {WebGLShader} A compiled shader
+		*/
 		that.CompileShader = function(pName)
 		{
 			var shaderC = Lynx.Shaders.Get(pName);
@@ -140,12 +220,18 @@ Lynx.Renderer = function(pCanvas){
 				var lastError = gl.getShaderInfoLog(shader);
 				Lynx.Error("Error compiling shader '" + pName + "': " + lastError);
 				gl.deleteShader(shader);
-				return;
+				return false;
 			}
 
 			return shader;
 		}
 
+		/**
+		* Description: Compiles a program with all compiled shaders.
+		*
+		* @this {Lynx.Renderer}
+		* @return {WebGLProgram} The compiled program
+		*/
 		that.CompileProgram = function()
 		{
 			if(arguments.length < 2)
@@ -166,13 +252,16 @@ Lynx.Renderer = function(pCanvas){
 			return tempProgram;
 		}
 
+		/**
+		* Description: Renders the WebGL Scene
+		*
+		* @this {Lynx.Renderer}
+		* @param {Lynx.CanvasElement} <pObject> The object(s) to render to the canvas.
+		*/
 		that.Render = (function(pObject)
 		{
 			if(!vertexShader || !fragmentShader)
 				return false;
-
-			if(pObject.Render)
-				return pObject.Render(gl);
 			
 			//sample only
 			var buildArray = [];
@@ -180,43 +269,47 @@ Lynx.Renderer = function(pCanvas){
 			if(!(pObject instanceof Array))
 				pObject = [pObject];
 
+			pObject.sort(this.SortMethod);
+
 			for(var i = 0; i < pObject.length; i++)
 			{
+				if(pObject[i].Render)
+				{
+					pObject[i].Render(gl);
+					continue;
+				}
+
 				if(lastShaderColor != pObject[i].Color)
 				{
-					//Draw this batch and switch colors
+					renderBatch(buildArray);
+					buildArray = [];
+		
 					if(pObject[i].Color)
 						gl.uniform1i(fragmentShader.GetVariable("color").Location, pObject[i].Color);
-					//todo: else use texture.
 
 					lastShaderColor = pObject[i].Color;
 				}
 
-				this.putRect(buildArray, pObject[i].X, pObject[i].Y, pObject[i].Width, pObject[i].Height);
+				pObject[i].GetVertices(buildArray);
 			}
 
 			var errors = gl.getError();
 			if(errors)
 				console.log(errors);
 			
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buildArray), gl.STATIC_DRAW);
-
-			gl.drawArrays(gl.TRIANGLES, 0, buildArray.length/2);
+			renderBatch(buildArray);
 		}).bind(that);
 
-		that.putRect = function(pBuildArray, pX, pY, pWidth, pHeight)
+		/**
+		* Description: Renders the given array to the canvas
+		*
+		* @this {Lynx.Renderer}
+		* @param {array} <pBuildArray> An array containing the vertices to render
+		*/
+		function renderBatch(pBuildArray)
 		{
-			var x2 = pX + pWidth;
-			var y2 = pY + pHeight;
-
-			pBuildArray.push(
-				pX, pY,
-				pX, y2,
-				x2, y2,
-				x2, y2,
-				x2, pY,
-				pX, pY
-				);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pBuildArray), gl.STATIC_DRAW);
+			gl.drawArrays(gl.TRIANGLES, 0, pBuildArray.length/2);			
 		}
 	}
 

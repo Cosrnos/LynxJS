@@ -52,15 +52,7 @@ Lynx.Canvas = function(pWidth, pHeight){
 	that.Update = (function()
 	{ 
 		this.Renderer.Clear();
-
-		if(Lynx.DefaultContext != '2d')
-		{
-			this.Renderer.Render(elements);
-			return true;
-		}
-
-		for(var i = 0; i < elements.length; i++)
-			elements[i].Draw(this.Renderer);
+		this.Renderer.Render(elements);
 
 		return true;
 	}).bind(that);
