@@ -207,7 +207,7 @@ function LynxLibrary ()
 		pUseDefault = pUseDefault || true;
 		var c = document.createElement("script");
 		c.type = "text/javascript";
-		c.async = false;
+		c.async = true;
 		c.addEventListener("load", loadCallback.bind(this), false);
 		c.src = this.Filepath + pFilepath;
 		document.body.appendChild(c);

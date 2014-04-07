@@ -14,6 +14,9 @@
 Lynx.Renderer = function(pCanvas){
 	var that = {};
 
+	//Properties
+	that.BatchSize = 1000;
+
 	if(!Lynx.Canvas) //To prevent load time errors
 		return that;
 
@@ -184,7 +187,7 @@ Lynx.Renderer = function(pCanvas){
 			var script = document.createElement("script");
 			script.id = "lynx-shader-"+pName;
 			script.type = "text/javascript";
-			script.async = false;
+			script.async = true;
 
 			script.addEventListener("load", function(){
 				if(Lynx.Debug)
@@ -291,6 +294,12 @@ Lynx.Renderer = function(pCanvas){
 				}
 
 				pObject[i].GetVertices(buildArray);
+
+				if(this.BatchSize <= buildArray.length / 2)
+				{
+					renderBatch(buildArray);
+					buildArray = [];
+				}
 			}
 
 			var errors = gl.getError();

@@ -74,10 +74,11 @@ Lynx.Thread = function(pName){
 	{
 		if(that.Running == false)
 			that.Stop();
-
+		console.time("Lynx-thread-update-#"+this.Name);
 		that.Delta = Date.now() - lastUpdate;
 		Lynx.Emit("_threadUpdate"+that.Name, that);
 		lastUpdate = Date.now();
+		console.timeEnd("Lynx-thread-update-#"+this.Name);
 	}).bind(that);
 
 	Lynx.Emit("Thread.Create", that);

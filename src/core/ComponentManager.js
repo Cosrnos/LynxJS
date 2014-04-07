@@ -76,7 +76,7 @@ Lynx.ComponentManager = (function(){
 	{
 		var c = document.createElement("script");
 		c.type = "text/javascript";
-		c.async = false;
+		c.async = true;
 		c.addEventListener("load", onload.bind(that), false);
 		c.src = pFilepath;
 		document.body.appendChild(c);
