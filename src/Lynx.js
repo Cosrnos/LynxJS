@@ -81,6 +81,7 @@ function LynxLibrary ()
 		load("core/AssetManager.js");
 		load("core/Thread.js");
 		load("core/Quadtree.js");
+		load("core/Entity.js");
 
 		//Load Geometry classes.
 		load("geometry/Point.js");
