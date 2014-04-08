@@ -70,16 +70,34 @@ Lynx.Thread = function(pName){
 	*
 	* @this {Lynx.Thread}
 	*/
-	that._threadUpdate = (function()
+	if(Lynx.Debug)
+	{	
+		that._threadUpdate = (function()
+		{
+			if(that.Running == false)
+				that.Stop();
+
+			console.time("Lynx-thread-update-#"+this.Name);
+
+			that.Delta = Date.now() - lastUpdate;
+			Lynx.Emit("_threadUpdate"+that.Name, that);
+			lastUpdate = Date.now();
+
+			console.timeEnd("Lynx-thread-update-#"+this.Name);
+		}).bind(that);
+	}
+	else
 	{
-		if(that.Running == false)
-			that.Stop();
-		console.time("Lynx-thread-update-#"+this.Name);
-		that.Delta = Date.now() - lastUpdate;
-		Lynx.Emit("_threadUpdate"+that.Name, that);
-		lastUpdate = Date.now();
-		console.timeEnd("Lynx-thread-update-#"+this.Name);
-	}).bind(that);
+		that._threadUpdate = (function()
+		{
+			if(that.Running == false)
+				that.Stop();
+
+			that.Delta = Date.now() - lastUpdate;
+			Lynx.Emit("_threadUpdate"+that.Name, that);
+			lastUpdate = Date.now();
+		}).bind(that);		
+	}
 
 	Lynx.Emit("Thread.Create", that);
 	

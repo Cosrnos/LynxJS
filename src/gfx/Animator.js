@@ -49,25 +49,46 @@ Lynx.Animator = (function(pName){
 	*
 	* @this {Lynx.Animator}
 	*/
-	var _threadUpdate = (function()
+	if(Lynx.Debug)
 	{
-		if(!this.Running)
+		var _threadUpdate = (function()
 		{
-			Lynx.Log("Stopped Animation Thread.");
-			return;
-		}
+			if(!this.Running)
+			{
+				Lynx.Log("Stopped Animation Thread.");
+				return;
+			}
 
-		requestFrame(_threadUpdate);
-		console.time("Lynx-animator-update-#"+this.Name);
+			requestFrame(_threadUpdate);
+			console.time("Lynx-animator-update-#"+this.Name);
 
-		this.Delta = Date.now() - lastUpdate;
-		Lynx.Emit("__requestAnimationFrame"+this.Name, this);
-		Lynx.Emit("requestAnimationFrame", this);
-		Lynx.Emit("afterRequestAnimationFrame", this);
-		lastUpdate = Date.now();
+			this.Delta = Date.now() - lastUpdate;
+			Lynx.Emit("__requestAnimationFrame"+this.Name, this);
+			Lynx.Emit("requestAnimationFrame", this);
+			Lynx.Emit("afterRequestAnimationFrame", this);
+			lastUpdate = Date.now();
 
-		console.timeEnd("Lynx-animator-update-#"+this.Name);
-	}).bind(that);
+			console.timeEnd("Lynx-animator-update-#"+this.Name);
+		}).bind(that);
+	}
+	else
+	{
+		var _threadUpdate = (function()
+		{
+			if(!this.Running)
+			{
+				Lynx.Log("Stopped Animation Thread.");
+				return;
+			}
+
+			requestFrame(_threadUpdate);
+			this.Delta = Date.now() - lastUpdate;
+			Lynx.Emit("__requestAnimationFrame"+this.Name, this);
+			Lynx.Emit("requestAnimationFrame", this);
+			Lynx.Emit("afterRequestAnimationFrame", this);
+			lastUpdate = Date.now();
+		}).bind(that);		
+	}
 
 	/**
 	* Description: Initializes the proper window.requestAnimationFrame method
