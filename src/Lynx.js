@@ -95,7 +95,7 @@ var Lynx = (function()
 		load("core/Quadtree.js");
 		load("core/Entity.js");
 		load("core/Layer.js");
-		load("core/Scene.js");
+		load("core/SceneBuilder.js");
 
 		//Load Geometry classes.
 		load("geometry/Point.js");
