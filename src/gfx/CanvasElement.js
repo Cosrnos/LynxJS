@@ -14,7 +14,12 @@
 Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	var that = new Lynx.Object();
 
-	var objectColor = -1;
+	var objectColor = {
+			Hex: -1,
+			R: -1,
+			G: -1,
+			B: -1
+		};
 
 	that.X = pX;
 	that.Y = pY;
@@ -23,7 +28,7 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	that.Type = pElementType;
 	
 	/**
-	* Description: A property for the objects color. Returns false if not set.
+	* Description: A property for the objects color. Returns -1 if not set.
 	*
 	* @this {Lynx.CanvasElement}
 	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
@@ -31,17 +36,24 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	Object.defineProperty(that, "Color", {
 		get: function()
 		{
-			return (objectColor > -1) ? objectColor : false;
+			return objectColor;
 		},
 		set: function(pValue)
 		{
 			if(typeof pValue === 'number' && pValue % 1 == 0 && pValue > -1)
-				objectColor = pValue;
+			{
+				objectColor = {
+					Hex: pValue,
+					R: ((pValue >> 16) & 0xFF) / 255,
+					G: ((pValue >> 8) & 0xFF) /255,
+					B: ((pValue & 0xFF)) / 255
+				};
+			}
 			else
 				Lynx.Warning("Could not set color of object to "+ pValue + " as it is not a whole, positive integer.");
 		}
 	});
-
+	
 	/**
 	* Description: Draws the object to the canvas with a provided 2d Context.
 	* 

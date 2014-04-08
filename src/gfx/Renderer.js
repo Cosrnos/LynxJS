@@ -15,7 +15,7 @@ Lynx.Renderer = function(pCanvas){
 	var that = {};
 
 	//Properties
-	that.BatchSize = 1000;
+	that.BatchSize = 1500;
 
 	if(!Lynx.Canvas) //To prevent load time errors
 		return that;
@@ -44,9 +44,9 @@ Lynx.Renderer = function(pCanvas){
 	*/
 	that.SortMethod = function(pA, pB)
 	{
-		if(pA.Color == pB.Color)
+		if(pA.Color.Hex == pB.Color.Hex)
 			return 0;
-		if(pA.Color > pB.Color)
+		if(pA.Color.Hex > pB.Color.Hex)
 			return 1;
 
 		return -1;
@@ -282,15 +282,18 @@ Lynx.Renderer = function(pCanvas){
 					continue;
 				}
 
-				if(lastShaderColor != pObject[i].Color)
+				if(pObject[i].Color.Hex != lastShaderColor)
 				{
 					renderBatch(buildArray);
 					buildArray = [];
 		
-					if(pObject[i].Color)
-						gl.uniform1i(fragmentShader.GetVariable("color").Location, pObject[i].Color);
+					if(pObject[i].Color.Hex != -1)
+					{
+						var c = pObject[i].Color;
+						gl.uniform4f(fragmentShader.GetVariable("color").Location, c.R, c.G, c.B, 1.0);
+					}
 
-					lastShaderColor = pObject[i].Color;
+					lastShaderColor = pObject[i].Color.Hex;
 				}
 
 				pObject[i].GetVertices(buildArray);
