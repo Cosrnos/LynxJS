@@ -122,6 +122,7 @@ Lynx.Renderer = function(pCanvas){
 			vertexShader = null,
 			fragmentShader = null;
 		var lastShaderColor = null;
+		var hasContext = false;
 		
 		var ready = false;
 
@@ -139,9 +140,6 @@ Lynx.Renderer = function(pCanvas){
 			that.LoadShader("vs-default", function(pName){
 				that.LoadShader("fs-default", function(pSecName){
 					program = that.CompileProgram(that.CompileShader(pName), that.CompileShader(pSecName));
-
-					if(!program)
-						return false;
 
 					gl.useProgram(program);
 
@@ -161,6 +159,21 @@ Lynx.Renderer = function(pCanvas){
 					Lynx.Log("Finished loading shaders...");
 				});
 			});
+
+			if(!ready)
+			{
+				that.Parent.Element.addEventListener("webglcontextlost", function(event){
+					event.preventDefault();
+					hasContext = false;
+					Lynx.Emit("Renderer.ContextLost");
+				}, false);
+
+				that.Parent.Element.addEventListener("webglcontextrestored", that.__refreshGL, false);
+
+				ready = true;
+			}
+
+			hasContext = true;
 		}
 
 		/**
@@ -263,7 +276,7 @@ Lynx.Renderer = function(pCanvas){
 		*/
 		that.Render = (function(pObject)
 		{
-			if(!vertexShader || !fragmentShader)
+			if(!vertexShader || !fragmentShader || !hasContext)
 				return false;
 			
 			//sample only
