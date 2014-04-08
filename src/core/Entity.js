@@ -15,6 +15,8 @@ Lynx.Entity = function(pImage)
 {
 	var that = new Lynx.Object();
 
+	that.Parent = null;
+
 	//Construct
 	var x = 0,
 		y = 0,
@@ -29,17 +31,17 @@ Lynx.Entity = function(pImage)
 	{
 
 	}
-	else if(arguments.length >= 2)
+	else if(Object.prototype.toString.call(pImage) == '[object Arguments]')
 	{
-		if(typeof arguments[0] === 'number')
+		if(typeof pImage[0] === 'number')
 		{
-			x = arguments[0];
-			y = arguments[1];
+			x = pImage[0];
+			y = pImage[1];
 
-			if(arguments.length == 4)
+			if(pImage.length == 4)
 			{
-				width = arguments[2];
-				height = arguments[3];
+				width = pImage[2];
+				height = pImage[3];
 			}
 		}
 	}
@@ -62,6 +64,11 @@ Lynx.Entity = function(pImage)
 		}
 	});
 
+	/**
+	* Description: Returns/Updates all associated X Positions within the Entity
+	*
+	* @this {Lynx.Entity}
+	*/	
 	Object.defineProperty(that, "X", {
 		get: function()
 		{
@@ -75,6 +82,11 @@ Lynx.Entity = function(pImage)
 		}
 	});
 
+	/**
+	* Description: Returns/Updates all associated Y Positions within the Entity
+	*
+	* @this {Lynx.Entity}
+	*/	
 	Object.defineProperty(that, "Y", {
 		get: function()
 		{
@@ -88,6 +100,11 @@ Lynx.Entity = function(pImage)
 		}
 	});
 
+	/**
+	* Description: Returns/Updates all associated Widths within the Entity
+	*
+	* @this {Lynx.Entity}
+	*/	
 	Object.defineProperty(that, "Width", {
 		get: function()
 		{
@@ -101,6 +118,11 @@ Lynx.Entity = function(pImage)
 		}
 	});
 
+	/**
+	* Description: Returns/Updates all associated Heights within the Entity
+	*
+	* @this {Lynx.Entity}
+	*/	
 	Object.defineProperty(that, "Height", {
 		get: function()
 		{
@@ -114,7 +136,25 @@ Lynx.Entity = function(pImage)
 		}
 	});
 
-	that.Emit("Entity.Create");
+	/**
+	* Description: Easy accessor for CanvasElement.Color
+	*
+	* @this {Lynx.Entity}
+	*/	
+	Object.defineProperty(that, "Color", {
+		get: function()
+		{
+			return canvasElement.Color;
+		},
+		set: function(pValue)
+		{
+			canvasElement.Color = pValue;
+		}
+	});
+
+	Lynx.Emit("Entity.Create");
 
 	return that;
 }
+
+Lynx.E = function(){ return Lynx.Entity(arguments); }

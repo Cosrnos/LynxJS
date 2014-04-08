@@ -197,11 +197,6 @@
 					});
 
 					Lynx.CM.Load("MouseEvents","KeyboardEvents");
-
-					Lynx.AM.QueueImage("samples/snow/assets/logo.png");
-
-					Viewport.On("AssetManager.Queue.Finish", function(){
-					});
 				});
 			}, false);
 
@@ -245,17 +240,17 @@
 
 				var width = size * (Math.random() * 3) + 1;
 				var height = size * (Math.random() * 2) + 1;
-				var ce = Lynx.CE(pX, pY, width, height, "square");
+				var e = Lynx.E(pX, pY, width, height);
 				
-				ce.vx = Math.floor(Math.random()* 2) + 1;
+				e.vx = Math.floor(Math.random()* 2) + 1;
 				var left = Math.floor(Math.random() * 2) + 1;
-				ce.vx = (left === 1) ? -1 * ce.vx : ce.vx;
-				ce.vy = Math.floor(Math.random()*6) + 3;
+				e.vx = (left === 1) ? -1 * e.vx : e.vx;
+				e.vy = Math.floor(Math.random()*6) + 3;
 
-				ce.Color = colors[Math.floor(Math.random() * colors.length)];
+				e.Color = colors[Math.floor(Math.random() * colors.length)];
 
-				ce.On("Update", updateElement);
-				Viewport.AddElement(ce);
+				e.On("Update", updateElement);
+				Lynx.Scene.AddEntity(e);
 			}
 		</script>
 		<script src="src/Lynx.js">

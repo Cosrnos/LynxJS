@@ -23,8 +23,6 @@ Lynx.Canvas = function(pWidth, pHeight){
 	Object.defineProperty(that, "Width", { get: function(){ return canvas.width; } });
 	Object.defineProperty(that, "Height", { get: function(){ return canvas.height; } });
 
-	var elements = [];
-
 	/**
 	* Description: Gets the HTML Canvas Element
 	*
@@ -45,31 +43,19 @@ Lynx.Canvas = function(pWidth, pHeight){
 	that.On("requestAnimationFrame", onRequestAnimationFrame);
 
 	/**
-	* Description: Draws all canvas elements
+	* Description: Draws all canvas elements in the current scene.
 	*
 	* @this {Lynx.Canvas}
 	*/
 	that.Update = (function()
 	{ 
 		this.Renderer.Clear();
-		this.Renderer.Render(elements);
+		var objs = Lynx.Scene.GetDrawableObjects();
+
+		this.Renderer.Render(objs);
 
 		return true;
 	}).bind(that);
-
-	/**
-	* Description: Adds the canvas element to the canvas
-	*
-	* @this {Lynx.Canvas}
-	* @param {Lynx.CanvasElement} <pCanvasElement> The element to add
-	* @return {int} the index of the added element (For removal later)
-	*/	
-	that.AddElement = function(pCanvasElement)
-	{
-		elements.push(pCanvasElement);
-		Lynx.Emit("Canvas.AddElement", this);
-		return elements.length-1;
-	};
 
 	/**
 	* Description: Takes a mouse position relative to the window and determines where it is on the canvas
@@ -98,18 +84,6 @@ Lynx.Canvas = function(pWidth, pHeight){
 	}).bind(that);
 
 	/**
-	* Description: Vertically and horizontally centers the provided image on the canvas
-	*
-	* @this {Lynx.Canvas}
-	* @param {Image} <pImage> Image to be centered
-	*/	
-	that.CenterImage = (function(pImage)
-	{
-		if(Lynx.DefaultContext == "2d")
-			this.Ctx("2d").drawImage(pImage, Math.floor((this.Width-pImage.width)/2), Math.floor((this.Height-pImage.height)/2));
-	}).bind(that);
-
-	/**
 	* Description: Fired when the window is ready to render another frame
 	*
 	* @this {Lynx.Canvas}
@@ -118,7 +92,7 @@ Lynx.Canvas = function(pWidth, pHeight){
 	function onRequestAnimationFrame(pSender)
 	{
 		return that.Update();
-	}
+	};
 
 
 	//Attach the renderer before returning

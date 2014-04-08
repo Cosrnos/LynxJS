@@ -18,7 +18,7 @@
 *    Global Variables: Lynx
 */
 
-function LynxLibrary ()
+var Lynx = (function()
 {
 	//Private variables
 	var that = {};
@@ -28,6 +28,8 @@ function LynxLibrary ()
 
 	var onLibraryLoad = function(){ };
 
+	var scene = null;
+
 	//Properties
 	that.Debug = false;
 	that.Filepath = "src/";
@@ -36,6 +38,16 @@ function LynxLibrary ()
 	that.Paused = false;
 	that.DefaultContext = "2d";
 	that.DisableWebGL = false;
+	
+	Object.defineProperty(that, "scene", {
+		get: function(){ return scene; },
+		set: function(pScene)
+		{
+			scene.Unload();
+			Lynx.Emit("Scene.Change"); //Loading screen can be set on this event
+			pScene.Load(function(){ scene = pScene; });
+		}
+	});
 
 	/**
 	* Description: Loads the Lynx JS Library
@@ -82,6 +94,8 @@ function LynxLibrary ()
 		load("core/Thread.js");
 		load("core/Quadtree.js");
 		load("core/Entity.js");
+		load("core/Layer.js");
+		load("core/Scene.js");
 
 		//Load Geometry classes.
 		load("geometry/Point.js");
@@ -165,6 +179,9 @@ function LynxLibrary ()
 				Lynx.Paused = true;
 			}
 		});
+
+		//Set up base scene
+		this.Scene = new Lynx.SceneBuilder("lynx-default");
 	}).bind(that);
 
 	/**
@@ -225,6 +242,4 @@ function LynxLibrary ()
 	}
 
 	return that;
-}
-
-var Lynx = new LynxLibrary();
+})();
