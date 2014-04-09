@@ -308,38 +308,42 @@ Lynx.Renderer = function(pCanvas){
 		* @this {Lynx.Renderer}
 		* @param {Lynx.CanvasElement} <pObject> The object(s) to render to the canvas.
 		*/
-		that.Render = (function(pObject)
+		that.Render = (function(pObjects, pCamera)
 		{
 			if(!vertexShader || !fragmentShader || !hasContext)
 				return false;
 			
-			//sample only
+			if(!pCamera)
+				pCamera = {X: 0, Y: 0};
+
 			var buildArray = [];
 
-			if(!(pObject instanceof Array))
-				pObject = [pObject];
+			if(!(pObjects instanceof Array))
+				pObjects = [pObjects];
 
-			pObject.sort(this.SortMethod);
+			pObjects.sort(this.SortMethod);
 
 			var lastLayer = 0;
 
-			for(var i = 0; i < pObject.length; i++)
+			for(var i = 0; i < pObjects.length; i++)
 			{
-				if(pObject[i].Render)
+				var o = pObjects[i];
+
+				if(o.Render)
 				{
-					pObject[i].Render(gl);
+					o.Render(gl, pCamera);
 					continue;
 				}
 
-				if(pObject[i].Layer != lastLayer)
+				if(o.Layer != lastLayer)
 				{
 					renderBatch(buildArray);
 					buildArray = [];
 				}
 
-				if(pObject[i].Color.Hex == -1 && pObject[i].Texture !== false)
+				if(o.Color.Hex == -1 && o.Texture !== false)
 				{
-					if(pObject[i].Texture instanceof Image)
+					if(o.Texture instanceof Image)
 					{
 						var tempText = gl.createTexture();
 						gl.bindTexture(gl.TEXTURE_2D, tempText);
@@ -350,9 +354,9 @@ Lynx.Renderer = function(pCanvas){
 						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 						gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
-						gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pObject[i].Texture);						
+						gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, o.Texture);						
 
-						pObject[i].Texture = tempText;
+						o.Texture = tempText;
 					}
 
 					var texCoordLocation = vertexShader.GetVariable("texCoord", "attribute").Location;
@@ -366,20 +370,20 @@ Lynx.Renderer = function(pCanvas){
 						1.0, 1.0,
 						1.0, 0.0,
 						0.0, 0.0]), gl.STATIC_DRAW);
-					gl.bindTexture(gl.TEXTURE_2D, pObject[i].Texture);
+					gl.bindTexture(gl.TEXTURE_2D, o.Texture);
 
 					gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 					gl.vertexAttribPointer(vertexShader.GetVariable("position", "attribute").Location, 2, gl.FLOAT, false, 0, 0);
 				}
 
-				if(pObject[i].Color.Hex != lastShaderColor)
+				if(o.Color.Hex != lastShaderColor)
 				{
 					renderBatch(buildArray);
 					buildArray = [];
 		
-					if(pObject[i].Color.Hex != -1)
+					if(o.Color.Hex != -1)
 					{
-						var c = pObject[i].Color;
+						var c = o.Color;
 						gl.uniform4f(fragmentShader.GetVariable("color", "uniform").Location, c.R, c.G, c.B, 1.0);
 						if(lastShaderColor == -1)
 						{
@@ -392,10 +396,10 @@ Lynx.Renderer = function(pCanvas){
 						gl.uniform4f(fragmentShader.GetVariable("color", "uniform").Location, 1.0, 1.0, 1.0, 1.0);
 					}
 
-					lastShaderColor = pObject[i].Color.Hex;
+					lastShaderColor = o.Color.Hex;
 				}
 
-				pObject[i].GetVertices(buildArray);
+				o.GetVertices(buildArray, pCamera);
 
 				if(this.BatchSize <= buildArray.length / 2)
 				{

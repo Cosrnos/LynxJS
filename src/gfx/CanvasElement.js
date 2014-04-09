@@ -104,18 +104,20 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	* @this {Lynx.CanvasElement}
 	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	*/
-	that.GetVertices = (function(pBuildArray)
+	that.GetVertices = (function(pBuildArray, pC)
 	{
-		var x2 = this.X + this.Width;
-		var y2 = this.Y + this.Height;
+		var x1 = this.X - pC.X;
+		var y1 = this.Y - pC.Y;
+		var x2 = this.X + this.Width - pC.X;
+		var y2 = this.Y + this.Height - pC.Y;
 
 		pBuildArray.push(
-				this.X, this.Y,
-				this.X, y2,
+				x1, y1,
+				x1, y2,
 				x2, y2,
 				x2, y2,
-				x2, this.Y,
-				this.X, this.Y
+				x2, y1,
+				x1, y1
 			);
 	}).bind(that);
 

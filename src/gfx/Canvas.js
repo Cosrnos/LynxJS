@@ -15,7 +15,6 @@ Lynx.Canvas = function(pWidth, pHeight){
 	var that = new Lynx.Object();
 	
 	//Private Variables
-
 	var canvas = document.createElement("canvas");
 	canvas.width = pWidth;
 	canvas.height = pHeight;
@@ -50,9 +49,9 @@ Lynx.Canvas = function(pWidth, pHeight){
 	that.Update = (function()
 	{ 
 		this.Renderer.Clear();
-		var objs = Lynx.Scene.GetDrawableObjects();
+		var objs = Lynx.Scene.GetDrawableObjects({X: Lynx.Scene.Camera.X, Y: Lynx.Scene.Camera.Y, Width: this.Width, Height: this.Height});
 
-		this.Renderer.Render(objs);
+		this.Renderer.Render(objs, Lynx.Scene.Camera);
 
 		return true;
 	}).bind(that);

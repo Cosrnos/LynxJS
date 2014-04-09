@@ -84,12 +84,30 @@ Lynx.Layer = function(pParent, pIndex)
 	* @this {Lynx.Layer}
 	* @return {Lynx.CanvasElement[]} An array of all the canvas elements on the layer
 	*/
-	that.GetDrawableObjects = function()
+	that.GetDrawableObjects = function(pViewArea)
 	{
 		var toReturn = ([]).concat(elements);
 
-		for(var i in entities)
-			toReturn.push(entities[i].CanvasElement);
+		if(!pViewArea)
+		{
+			for(var i in entities)
+				toReturn.push(entities[i].CanvasElement);
+		}
+		else
+		{
+			for(var i in entities)
+			{
+				var ex1 = entities[i].X;
+				var ex2 = ex1 + entities[i].Width;
+				var ey1 = entities[i].Y;
+				var ey2 = ey1 + entities[i].Height;
+
+				if(ex1 > pViewArea.X + pViewArea.Width || ex2 < pViewArea.X || ey1 > pViewArea.Y + pViewArea.Height || ey2 < pViewArea.Y)
+					continue;
+
+				toReturn.push(entities[i].CanvasElement);
+			}
+		}
 
 		return toReturn;
 	};

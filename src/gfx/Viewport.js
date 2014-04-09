@@ -14,7 +14,7 @@
 Lynx.Viewport = function(pId){
 	var parent = document.getElementById(pId);
 	var that = new Lynx.Canvas(parent.clientWidth, parent.clientHeight);
-	
+
 	var internalId = 1000 + Math.floor(Math.random()*8999);
 
 	Object.defineProperty(that, "Id", { get: function(){ return "lynx-viewport-"+internalId; } });
@@ -36,7 +36,7 @@ Lynx.Viewport = function(pId){
 	*/
 	that.ParseMousePosition = function(pX, pY)
 	{
-		return {X: Math.floor(pX - that.Element.offsetLeft), Y: Math.floor(pY - that.Element.offsetTop)};
+		return {X: Math.floor(pX - that.Element.offsetLeft + Lynx.Scene.Camera.X), Y: Math.floor(pY - that.Element.offsetTop + Lynx.Scene.Camera.Y)};
 	}
 
 	that.Renderer.RefreshContext();

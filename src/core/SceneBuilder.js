@@ -16,6 +16,7 @@ Lynx.SceneBuilder = function(pName)
 	var that = new Lynx.Object();
 
 	that.Name = pName;
+	that.Camera = { X: 0, Y: 0 };
 
 	var layers = [ new Lynx.Layer(this, 0) ];
 
@@ -50,12 +51,12 @@ Lynx.SceneBuilder = function(pName)
 	* @this {Lynx.SceneBuilder}
 	* @return {Lynx.CanvasElement[]} An array of canvas elements to draw
 	*/	
-	that.GetDrawableObjects = function()
+	that.GetDrawableObjects = function(pViewArea)
 	{
 		var toReturn = [];
 
-		for(var i = 0; i < layers.length; i++)
-			toReturn = toReturn.concat(layers[i].GetDrawableObjects());
+			for(var i = 0; i < layers.length; i++)
+				toReturn = toReturn.concat(layers[i].GetDrawableObjects(pViewArea));
 
 		return toReturn;
 	};
