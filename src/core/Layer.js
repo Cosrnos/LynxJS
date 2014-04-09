@@ -38,6 +38,7 @@ Lynx.Layer = function(pParent, pIndex)
 	that.AddEntity = function(pEntity)
 	{
 		pEntity.Parent = this;
+		pEntity.CanvasElement.Layer = this.Index;
 		entities.push(pEntity);
 	};
 

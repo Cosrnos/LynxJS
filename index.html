@@ -198,6 +198,16 @@
 					});
 
 					Lynx.CM.Load("MouseEvents","KeyboardEvents");
+
+					Lynx.AM.QueueImage("logo","samples/snow/assets/logo.png");
+
+					Lynx.AM.LoadQueue(function(){
+						var logoE = new Lynx.E(Lynx.AM.Get("logo").Asset);
+						logoE.X = Viewport.Width / 2 - logoE.Width / 2;
+						logoE.Y = Viewport.Height /2 - logoE.Height /2;
+						Lynx.Scene.AddLayer();
+						Lynx.Scene.AddEntity(logoE);
+					});
 				});
 			}, false);
 
@@ -207,7 +217,7 @@
 
 				this.X += this.vx * Lynx.Main.Delta / 100;
 				this.Y += this.vy * Lynx.Main.Delta / 100;
-			
+
 				if(this.X+this.Width > Viewport.Width + size)
 				{
 					this.X = 0;
@@ -251,7 +261,7 @@
 				e.Color = colors[Math.floor(Math.random() * colors.length)];
 
 				e.On("Update", updateElement);
-				Lynx.Scene.AddEntity(e);
+				Lynx.Scene.Layers[0].AddEntity(e);
 			}
 		</script>
 		<script src="src/Lynx.js">

@@ -27,9 +27,10 @@ Lynx.Entity = function(pImage)
 	{
 		Lynx.Warning("A ghost entity has been created, please make sure to initialize all entities to avoid conflicts.");
 	}
-	else if(pImage instanceof Image)
+	else if(pImage[0] instanceof Image)
 	{
-
+		width = pImage[0].width;
+		height = pImage[0].height;
 	}
 	else if(Object.prototype.toString.call(pImage) == '[object Arguments]')
 	{
@@ -49,6 +50,9 @@ Lynx.Entity = function(pImage)
 	//Properties
 	var canvasElement = new Lynx.CE(x, y, width, height, "entity");
 	var bounds = new Lynx.Rect(x, y, width, height);
+
+	if(pImage[0] instanceof Image)
+		canvasElement.Texture = pImage[0];
 
 	Object.defineProperty(that, "CanvasElement", {
 		get: function()
@@ -76,6 +80,8 @@ Lynx.Entity = function(pImage)
 		},
 		set: function(pX)
 		{
+			if(isNaN(pX))
+				return;
 			x = pX;
 			bounds.X = pX;
 			canvasElement.X = pX;

@@ -44,9 +44,15 @@ Lynx.Renderer = function(pCanvas){
 	*/
 	that.SortMethod = function(pA, pB)
 	{
+		//Sort by layer
+		if(pA.Layer > pB.Layer)
+			return 1;
+		else if(pA.Layer < pB.Layer)
+			return -1;
+
 		if(pA.Color.Hex == pB.Color.Hex)
 			return 0;
-		if(pA.Color.Hex > pB.Color.Hex)
+		else if(pA.Color.Hex > pB.Color.Hex)
 			return 1;
 
 		return -1;
@@ -89,8 +95,8 @@ Lynx.Renderer = function(pCanvas){
 
 				if(lastFillColor != pObject[i].Color)
 				{
-					if(pObject[i].Color)
-						var newColor = "#"+pObject[i].Color.toString(16);
+					if(pObject[i].Color.Hex != -1)
+						var newColor = "#"+pObject[i].Color.Hex.toString(16);
 						ctx.fillStyle = newColor;
 					
 					lastFillColor = pObject[i].Color;
@@ -123,7 +129,10 @@ Lynx.Renderer = function(pCanvas){
 			fragmentShader = null;
 		var lastShaderColor = null;
 		var hasContext = false;
-		
+		var blankTexture = null;
+		var texCoordBuffer = null,
+			positionBuffer = null;
+
 		var ready = false;
 
 		/**
@@ -135,11 +144,17 @@ Lynx.Renderer = function(pCanvas){
 		{
 			gl = context;
 			gl.viewport(0, 0, that.Parent.Width, that.Parent.Height);
-			
+
 			//Clear current programs and shaders.
 			that.LoadShader("vs-default", function(pName){
 				that.LoadShader("fs-default", function(pSecName){
 					program = that.CompileProgram(that.CompileShader(pName), that.CompileShader(pSecName));
+
+					if(!program)
+					{
+						Lynx.Error("Failed to compile WebGL Program.");
+						return false;
+					}
 
 					gl.useProgram(program);
 
@@ -149,12 +164,29 @@ Lynx.Renderer = function(pCanvas){
 					vertexShader.GetLocations(gl, program);
 					fragmentShader.GetLocations(gl, program);
 
-					gl.uniform2f(vertexShader.GetVariable("resolution").Location, this.Parent.Width, this.Parent.Height);
+					var texCoordLocation = vertexShader.GetVariable("texCoord", "attribute");
 
-					buffer = gl.createBuffer();
-					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-					gl.enableVertexAttribArray(vertexShader.GetVariable("position").Location);
-					gl.vertexAttribPointer(vertexShader.GetVariable("position").Location, 2, gl.FLOAT, false, 0, 0);
+					texCoordBuffer = gl.createBuffer();
+					gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+					gl.enableVertexAttribArray(texCoordLocation);
+					gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+
+					blankTexture = gl.createTexture();
+					gl.bindTexture(gl.TEXTURE_2D, blankTexture);
+
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+					gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+
+					gl.uniform2f(vertexShader.GetVariable("resolution", "uniform").Location, this.Parent.Width, this.Parent.Height);
+
+					positionBuffer = gl.createBuffer();
+					gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+					gl.enableVertexAttribArray(vertexShader.GetVariable("position", "attribute").Location);
+					gl.vertexAttribPointer(vertexShader.GetVariable("position", "attribute").Location, 2, gl.FLOAT, false, 0, 0);
 
 					Lynx.Log("Finished loading shaders...");
 				});
@@ -289,12 +321,55 @@ Lynx.Renderer = function(pCanvas){
 
 			pObject.sort(this.SortMethod);
 
+			var lastLayer = 0;
+
 			for(var i = 0; i < pObject.length; i++)
 			{
 				if(pObject[i].Render)
 				{
 					pObject[i].Render(gl);
 					continue;
+				}
+
+				if(pObject[i].Layer != lastLayer)
+				{
+					renderBatch(buildArray);
+					buildArray = [];
+				}
+
+				if(pObject[i].Color.Hex == -1 && pObject[i].Texture !== false)
+				{
+					if(pObject[i].Texture instanceof Image)
+					{
+						var tempText = gl.createTexture();
+						gl.bindTexture(gl.TEXTURE_2D, tempText);
+
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+
+						gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pObject[i].Texture);						
+
+						pObject[i].Texture = tempText;
+					}
+
+					var texCoordLocation = vertexShader.GetVariable("texCoord", "attribute").Location;
+					gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+					gl.enableVertexAttribArray(texCoordLocation);
+					gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+					gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+						0.0, 0.0,
+						0.0, 1.0,
+						1.0, 1.0,
+						1.0, 1.0,
+						1.0, 0.0,
+						0.0, 0.0]), gl.STATIC_DRAW);
+					gl.bindTexture(gl.TEXTURE_2D, pObject[i].Texture);
+
+					gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+					gl.vertexAttribPointer(vertexShader.GetVariable("position", "attribute").Location, 2, gl.FLOAT, false, 0, 0);
 				}
 
 				if(pObject[i].Color.Hex != lastShaderColor)
@@ -305,7 +380,16 @@ Lynx.Renderer = function(pCanvas){
 					if(pObject[i].Color.Hex != -1)
 					{
 						var c = pObject[i].Color;
-						gl.uniform4f(fragmentShader.GetVariable("color").Location, c.R, c.G, c.B, 1.0);
+						gl.uniform4f(fragmentShader.GetVariable("color", "uniform").Location, c.R, c.G, c.B, 1.0);
+						if(lastShaderColor == -1)
+						{
+							gl.bindTexture(gl.TEXTURE_2D, blankTexture);
+							gl.disableVertexAttribArray(vertexShader.GetVariable("texCoord", "attribute").Location);
+						}
+					}
+					else
+					{
+						gl.uniform4f(fragmentShader.GetVariable("color", "uniform").Location, 1.0, 1.0, 1.0, 1.0);
 					}
 
 					lastShaderColor = pObject[i].Color.Hex;
@@ -336,7 +420,7 @@ Lynx.Renderer = function(pCanvas){
 		function renderBatch(pBuildArray)
 		{
 			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pBuildArray), gl.STATIC_DRAW);
-			gl.drawArrays(gl.TRIANGLES, 0, pBuildArray.length/2);			
+			gl.drawArrays(gl.TRIANGLES, 0, pBuildArray.length/2);
 		}
 	}
 

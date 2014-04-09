@@ -94,11 +94,11 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 	* @param {string} <pName> The name of the variable to get
 	* @return {this.Variable{}|bool} the variable object or false if not found. 
 	*/
-	that.GetVariable = function(pName)
+	that.GetVariable = function(pName, pType)
 	{
 		for(var i = 0; i < variables.length; i++)
 		{
-			if(variables[i].Name == pName)
+			if(variables[i].Name == pName && variables[i].DataType.toUpperCase() == pType.toUpperCase())
 				return variables[i];
 		}
 

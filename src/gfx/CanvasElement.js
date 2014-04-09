@@ -20,18 +20,19 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 			G: -1,
 			B: -1
 		};
+	var objectTexture = null;
 
 	that.X = pX;
 	that.Y = pY;
 	that.Width = pWidth;
 	that.Height = pHeight;
 	that.Type = pElementType;
+	that.Layer = 0;
 	
 	/**
-	* Description: A property for the objects color. Returns -1 if not set.
+	* Description: A property for the objects color.
 	*
 	* @this {Lynx.CanvasElement}
-	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	*/	
 	Object.defineProperty(that, "Color", {
 		get: function()
@@ -53,6 +54,32 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 				Lynx.Warning("Could not set color of object to "+ pValue + " as it is not a whole, positive integer.");
 		}
 	});
+
+	/**
+	* Description: A property for the objects texture. Returns false if not set.
+	*
+	* @this {Lynx.CanvasElement}
+	*/	
+	Object.defineProperty(that, "Texture", {
+		get: function()
+		{
+			if(!objectTexture)
+				return false;
+
+			return objectTexture;
+		},
+		set: function(pImage)
+		{
+			if(pImage instanceof Image || pImage instanceof WebGLTexture)
+			{
+				objectTexture = pImage;
+			}
+			else
+			{
+				Lynx.Log(typeof pImage);
+			}
+		}
+	})
 	
 	/**
 	* Description: Draws the object to the canvas with a provided 2d Context.
@@ -63,7 +90,10 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	*/
 	that.Draw = (function(context)
 	{
-		context.fillRect(this.X, this.Y, this.Width, this.Height);
+		if(objectTexture instanceof Image)
+			context.drawImage(objectTexture, this.X, this.Y, this.Width, this.Height);
+		else
+			context.fillRect(this.X, this.Y, this.Width, this.Height);
 		return true;
 	}).bind(that);
 
