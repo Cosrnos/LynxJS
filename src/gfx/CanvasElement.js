@@ -88,12 +88,12 @@ Lynx.CanvasElement = function(pX, pY, pWidth, pHeight, pElementType){
 	* @this {Lynx.CanvasElement}
 	* @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	*/
-	that.Draw = (function(context)
+	that.Draw = (function(context, pC)
 	{
 		if(objectTexture instanceof Image)
-			context.drawImage(objectTexture, this.X, this.Y, this.Width, this.Height);
+			context.drawImage(objectTexture, this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);
 		else
-			context.fillRect(this.X, this.Y, this.Width, this.Height);
+			context.fillRect(this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);
 		return true;
 	}).bind(that);
 

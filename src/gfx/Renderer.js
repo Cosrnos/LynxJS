@@ -71,7 +71,8 @@ Lynx.Renderer = function(pCanvas){
 		*/
 		that.Clear = function(){
 			ctx.clearRect(0,0, buffer.width, buffer.height);
-			context.clearRect(0,0, this.Parent.Width, this.Parent.Height);
+			context.fillStyle = "#"+this.Parent.ClearColor.Hex.toString("16");
+			context.fillRect(0,0, this.Parent.Width, this.Parent.Height);
 		};
 
 		/**
@@ -80,16 +81,19 @@ Lynx.Renderer = function(pCanvas){
 		* @this {Lynx.Renderer}
 		* @param {Lynx.CanvasElement[]} <pObject> the object(s) to render
 		*/
-		that.Render = function(pObject)
+		that.Render = function(pObject, pCamera)
 		{
 			if(!(pObject instanceof Array))
 				pObject = [pObject];
+
+			if(!pCamera)
+				pCamera = {X: 0, Y: 0};
 
 			for(var i = 0; i < pObject.length; i++)
 			{
 				if(pObject[i].FBRender)
 				{
-					pObject[i].FBRender(ctx);
+					pObject[i].FBRender(ctx, pCamera);
 					continue;
 				}
 
@@ -102,7 +106,7 @@ Lynx.Renderer = function(pCanvas){
 					lastFillColor = pObject[i].Color;
 				}
 
-				pObject[i].Draw(ctx);
+				pObject[i].Draw(ctx, pCamera);
 			}
 			context.drawImage(buffer, 0, 0, buffer.width, buffer.height);
 		};
@@ -145,6 +149,9 @@ Lynx.Renderer = function(pCanvas){
 			gl = context;
 			gl.viewport(0, 0, that.Parent.Width, that.Parent.Height);
 
+			var cc = that.Parent.ClearColor;
+			gl.clearColor(cc.R, cc.G, cc.B, 1.0);
+			
 			//Clear current programs and shaders.
 			that.LoadShader("vs-default", function(pName){
 				that.LoadShader("fs-default", function(pSecName){

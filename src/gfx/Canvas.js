@@ -11,8 +11,45 @@
 *    Global Variables: Lynx.Canvas()
 */
 
-Lynx.Canvas = function(pWidth, pHeight){
+Lynx.Canvas = function(pWidth, pHeight, pClearColor){
 	var that = new Lynx.Object();
+
+	if(!pClearColor)
+		pClearColor = 0x000000;
+
+	var clearColor = {
+			Hex: pClearColor,
+			R: ((pClearColor >> 16) & 0xFF) / 255,
+			G: ((pClearColor >> 8) & 0xFF) /255,
+			B: ((pClearColor & 0xFF)) / 255
+		};
+
+	/**
+	* Description: A property for the canvas clear color.
+	*
+	* @this {Lynx.Canvas}
+	*/	
+	Object.defineProperty(that, "ClearColor", {
+		get: function()
+		{
+			return clearColor;
+		},
+		set: function(pValue)
+		{
+			if(typeof pValue === 'number' && pValue % 1 == 0 && pValue > -1)
+			{
+				clearColor = {
+					Hex: pValue,
+					R: ((pValue >> 16) & 0xFF) / 255,
+					G: ((pValue >> 8) & 0xFF) /255,
+					B: ((pValue & 0xFF)) / 255
+				};
+				that.Renderer.__refreshGL();
+			}
+			else
+				Lynx.Warning("Could not set clear color of canvas to "+ pValue + " as it is not a whole, positive integer.");
+		}
+	});
 	
 	//Private Variables
 	var canvas = document.createElement("canvas");
