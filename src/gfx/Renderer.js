@@ -208,8 +208,10 @@ Lynx.Renderer = function(pCanvas){
 				
 				pLoadCallback.bind(that)(pName);
 			}, false);
-
-			script.src = Lynx.Filepath+"shaders/"+pName+".js";
+			var end = pName + ".js";
+			if(Lynx.DisableCache)
+				end = end + "?a="+Date.now();
+			script.src = Lynx.Filepath+"shaders/"+end;
 			document.body.appendChild(script);
 		}
 

@@ -32,6 +32,7 @@ var Lynx = (function()
 
 	//Properties
 	that.Debug = false;
+	that.DisableCache = false;
 	that.Filepath = "src/";
 	that.LogTarget = "";
 	that.Main = {};
@@ -227,6 +228,8 @@ var Lynx = (function()
 		c.type = "text/javascript";
 		c.async = true;
 		c.addEventListener("load", loadCallback.bind(this), false);
+		if(Lynx.DisableCache)
+			pFilepath = pFilepath + "?a=" + Date.now();
 		c.src = this.Filepath + pFilepath;
 		document.body.appendChild(c);
 		loadTotal++;

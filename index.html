@@ -134,6 +134,7 @@
 
 			window.addEventListener("load",function load(event){
 				Lynx.LogTarget = "console";
+				Lynx.DisableCache = true;
 				Lynx.Load(function(){
 					Viewport = new Lynx.Viewport("viewport-container");
 
