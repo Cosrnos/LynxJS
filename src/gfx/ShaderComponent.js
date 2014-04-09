@@ -143,11 +143,10 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 				case that.VariableType.Uniform:
 					variables[v].Location = pGl.getUniformLocation(pProgram, "u_"+variables[v].Name);
 					break;
-				case that.VariableType.Varying:
-					variables[v].Location = pGl.getVaryingLocation(pProgram, "v_"+variables[v].Name);
+				case that.VariableType.Attribute:
+					variables[v].Location = pGl.getAttribLocation(pProgram, "a_"+variables[v].Name);
 					break;
 				default:
-					variables[v].Location = pGl.getAttribLocation(pProgram, "a_"+variables[v].Name);
 					break;
 			}
 		}
@@ -166,7 +165,10 @@ Lynx.ShaderComponent = function(pName, pType, pBuildFunc)
 	function addVar(pAUV, pType, pName, pValue)
 	{
 		if(variables.indexOf(pName) != -1)
-			return false;
+		{
+			if(variables[variables.indexOf(pName)].DataType.toUpperCase() === pAUV.toUpperCase())
+				return false;
+		}
 
 		switch(pAUV.toUpperCase())
 		{
