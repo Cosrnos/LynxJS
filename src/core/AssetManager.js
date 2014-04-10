@@ -146,6 +146,25 @@ Lynx.AssetManager = (function(){
 	}
 
 	/**
+	* Description: Adds the given JSON file to the loading queue
+	*
+	* @this {Lynx.AssetManager}
+	* @param {String} <pPath> Location of the asset relative to the working directory
+	*/
+	that.QueueJSON = function(pName, pFilepath)
+	{
+		if(typeof pFilepath == 'undefined' || pFilepath == "")
+			pFilepath = pName;
+
+		var asset = new Lynx.Asset;
+		asset.Name = pName;
+		asset.Filepath = pFilepath;
+		asset.Type = "json";
+
+		this.Queue(asset);
+	}
+
+	/**
 	* Description: Loads all assets in the queue
 	*    This code is blocking and will not allow anymore assets to be loaded until the
 	*    current queue is finished processing.
@@ -194,6 +213,18 @@ Lynx.AssetManager = (function(){
 
 					video.src = i.Filepath;
 					i.Asset = video;
+					break;
+				case "json":
+					var client = new XMLHttpRequest;
+					client.open('get', i.Filepath);
+					client.addEventListener("readystatechange", (function(){
+						if(client.status == 200 && client.responseText != "")
+						{
+							this.Asset = JSON.parse(client.responseText);
+							queueCallback(this)
+						}
+					}).bind(i));
+					client.send();
 					break;
 				default:
 					//No idea what this is, so we'll treat it as a file
