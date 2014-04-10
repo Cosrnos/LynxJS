@@ -225,7 +225,7 @@ var Lynx = (function()
 		pUseDefault = pUseDefault || true;
 		var c = document.createElement("script");
 		c.type = "text/javascript";
-		c.async = true;
+		c.async = false;
 		c.addEventListener("load", loadCallback.bind(this), false);
 		if(Lynx.DisableCache)
 			pFilepath = pFilepath + "?a=" + Date.now();
