@@ -75,7 +75,6 @@
 			}
 
 			#viewport-container{
-				background: #000;
 				height: 450px;
 				width: 800px;
 				margin: 00 auto;
@@ -197,9 +196,11 @@
 						}
 					});
 
-					Lynx.CM.Load("MouseEvents","KeyboardEvents");
+					Lynx.CM.Load("MouseEvents", "KeyboardEvents", "Tracker");
 
 					Lynx.AM.QueueImage("logo","samples/snow/assets/logo.png");
+//					Lynx.AM.QueueAudio("music", "samples/snow/assets/music.wav");
+					Lynx.AM.QueueJSON("file", "samples/snow/assets/test.json");
 
 					Lynx.AM.LoadQueue(function(){
 						var logoE = new Lynx.E(Lynx.AM.Get("logo").Asset);
@@ -207,8 +208,10 @@
 						logoE.Y = Viewport.Height /2 - logoE.Height /2;
 						Lynx.Scene.AddLayer();
 						Lynx.Scene.AddEntity(logoE);
-						Lynx.Scene.Camera.X = 200;
-						Lynx.Scene.Camera.Y = 200;
+						console.log("Meaning of life: "+Lynx.AM.Get("file").Asset.MeaningOfLife);
+
+//						var msc = Lynx.AM.Get("music").Asset;
+//						msc.play();
 					});
 				});
 			}, false);

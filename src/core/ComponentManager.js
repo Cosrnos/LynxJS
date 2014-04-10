@@ -78,6 +78,8 @@ Lynx.ComponentManager = (function(){
 		c.type = "text/javascript";
 		c.async = true;
 		c.addEventListener("load", onload.bind(that), false);
+		if(Lynx.DisableCache)
+			pFilepath = pFilepath + "?a="+Date.now();
 		c.src = pFilepath;
 		document.body.appendChild(c);
 	}

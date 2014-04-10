@@ -170,7 +170,9 @@ var Lynx = (function()
 		this.Main = new Lynx.Thread("Main");
 		this.Main.On("_threadUpdateMain",function(pSender){
 			if(!Lynx.DocumentHidden()){
+				Lynx.Emit("beforeUpdate", pSender);
 				Lynx.Emit("Update",pSender);
+				Lynx.Emit("afterUpdate", pSender);
 				Lynx.Paused = false;
 			}
 			else

@@ -63,6 +63,7 @@ Lynx.Animator = (function(pName){
 			console.time("Lynx-animator-update-#"+this.Name);
 
 			this.Delta = Date.now() - lastUpdate;
+			Lynx.Emit("beforeRequestAnimationFrame", this);
 			Lynx.Emit("__requestAnimationFrame"+this.Name, this);
 			Lynx.Emit("requestAnimationFrame", this);
 			Lynx.Emit("afterRequestAnimationFrame", this);
@@ -83,6 +84,7 @@ Lynx.Animator = (function(pName){
 
 			requestFrame(_threadUpdate);
 			this.Delta = Date.now() - lastUpdate;
+			Lynx.Emit("beforeRequestAnimationFrame", this);
 			Lynx.Emit("__requestAnimationFrame"+this.Name, this);
 			Lynx.Emit("requestAnimationFrame", this);
 			Lynx.Emit("afterRequestAnimationFrame", this);
