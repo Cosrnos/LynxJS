@@ -110,25 +110,39 @@ Lynx.AssetManager = (function(){
 	/**
 	* Description: Adds the given audio to the loading queue
 	*
-	* @unimplimented
 	* @this {Lynx.AssetManager}
 	* @param {String} <pPath> Location of the asset relative to the working directory
 	*/
-	that.QueueAudio = function(pPath)
+	that.QueueAudio = function(pName, pFilepath)
 	{
-		return;
+		if(typeof pFilepath == 'undefined' || pFilepath == "")
+			pFilepath = pName;
+
+		var asset = new Lynx.Asset;
+		asset.Name = pName;
+		asset.Filepath = pFilepath;
+		asset.Type = "audio";
+
+		this.Queue(asset);
 	}
 
 	/**
 	* Description: Adds the given video to the loading queue
 	*
-	* @unimplimented
 	* @this {Lynx.AssetManager}
 	* @param {String} <pPath> Location of the asset relative to the working directory
 	*/
-	that.QueueVideo = function(pPath)
+	that.QueueVideo = function(pName, pFilepath)
 	{
-		return;
+		if(typeof pFilepath == 'undefined' || pFilepath == "")
+			pFilepath = pName;
+
+		var asset = new Lynx.Asset;
+		asset.Name = pName;
+		asset.Filepath = pFilepath;
+		asset.Type = "video";
+
+		this.Queue(asset);
 	}
 
 	/**
@@ -146,7 +160,7 @@ Lynx.AssetManager = (function(){
 
 		processing = true;
 
-		for(var x in queue)
+		for(var x = 0; x < queue.length; x++)
 		{
 			var i = queue[x];
 			switch(i.Type)
@@ -154,9 +168,9 @@ Lynx.AssetManager = (function(){
 				case "img":
 					var img = new Image();
 					
-					img.addEventListener("load",function(){
-						queueCallback(i);
-					}, false);
+					img.addEventListener("load",(function(){
+						queueCallback(this);
+					}).bind(i), false);
 
 					img.src = i.Filepath;
 					i.Asset = img;
@@ -164,9 +178,9 @@ Lynx.AssetManager = (function(){
 				case "audio":
 					var audio = new Audio();
 
-					audio.addEventListener("canplaythrough", function(){
-						queueCallback(i);
-					}, false);
+					audio.addEventListener("canplaythrough", (function(){
+						queueCallback(this);
+					}).bind(i), false);
 
 					audio.src = i.Filepath;
 					i.Asset = audio;
@@ -174,9 +188,9 @@ Lynx.AssetManager = (function(){
 				case "video":
 					var video = new Video();
 
-					video.addEventListener("canplaythrough", function(){
-						queueCallback(i);
-					}, false);
+					video.addEventListener("canplay", (function(){
+						queueCallback(this);
+					}).bind(i), false);
 
 					video.src = i.Filepath;
 					i.Asset = video;
@@ -186,9 +200,9 @@ Lynx.AssetManager = (function(){
 					//Probably not the best but it works for now ~Cosrnos
 					var client = new XMLHttpRequest();
 					client.open('GET', i.Filepath);
-					client.addEventListener("readystatechange", function(){
-						queueCallback(i);
-					}, false);
+					client.addEventListener("readystatechange", (function(){
+						queueCallback(this);
+					}).bind(i), false);
 					client.send();
 					break;
 			}
@@ -239,8 +253,6 @@ Lynx.AssetManager = (function(){
 			Lynx.Emit("AssetManager.Queue.Finished", this);
 			queueFinishCallback();
 		}
-		else
-			Lynx.Log(queue.length);
 	}
 
 	return that;
