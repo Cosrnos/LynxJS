@@ -270,6 +270,9 @@ Lynx.AssetManager = (function(){
 	*/
 	function queueCallback(pAsset)
 	{
+		if(pAsset.Status > 0)
+			return;
+
 		if(queue.indexOf(pAsset) > -1)
 		{
 			queue.splice(queue.indexOf(pAsset), 1);
