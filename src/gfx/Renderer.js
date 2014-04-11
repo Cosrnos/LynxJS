@@ -34,30 +34,6 @@ Lynx.Renderer = function(pCanvas){
 		that.__refreshGL();
 	}
 
-	/**
-	* Description: The method called to sort the array objects for rendering optimization.
-	* 
-	* @this {Lynx.Renderer}
-	* @param {Lynx.CanvasElement} <pA> The first object
-	* @param {Lynx.CanvasElement} <pB> The second object
-	* @return {int} See array.prototype.sort for more info
-	*/
-	that.SortMethod = function(pA, pB)
-	{
-		//Sort by layer
-		if(pA.Layer > pB.Layer)
-			return 1;
-		else if(pA.Layer < pB.Layer)
-			return -1;
-
-		if(pA.Color.Hex == pB.Color.Hex)
-			return 0;
-		else if(pA.Color.Hex > pB.Color.Hex)
-			return 1;
-
-		return -1;
-	};
-
 	if(Lynx.DefaultContext == "2d")
 	{
 		var buffer = null,
@@ -213,7 +189,7 @@ Lynx.Renderer = function(pCanvas){
 			}
 
 			hasContext = true;
-		}
+		};
 
 		/**
 		* Description: Clears the WebGL Buffers
@@ -319,16 +295,11 @@ Lynx.Renderer = function(pCanvas){
 		{
 			if(!vertexShader || !fragmentShader || !hasContext)
 				return false;
-			
-			if(!pCamera)
-				pCamera = {X: 0, Y: 0};
 
 			var buildArray = [];
 
 			if(!(pObjects instanceof Array))
 				pObjects = [pObjects];
-
-			pObjects.sort(this.SortMethod);
 
 			var lastLayer = 0;
 
@@ -342,7 +313,7 @@ Lynx.Renderer = function(pCanvas){
 					continue;
 				}
 
-				if(o.Layer != lastLayer)
+				if(o.Layer != lastLayer || this.BatchSize <= buildArray.length / 2)
 				{
 					renderBatch(buildArray);
 					buildArray = [];
@@ -407,17 +378,7 @@ Lynx.Renderer = function(pCanvas){
 				}
 
 				o.GetVertices(buildArray, pCamera);
-
-				if(this.BatchSize <= buildArray.length / 2)
-				{
-					renderBatch(buildArray);
-					buildArray = [];
-				}
 			}
-
-			var errors = gl.getError();
-			if(errors)
-				console.log(errors);
 			
 			renderBatch(buildArray);
 		}).bind(that);

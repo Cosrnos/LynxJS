@@ -20,6 +20,7 @@ Lynx.Layer = function(pParent, pIndex)
 
 	var entities = [];
 	var elements = [];
+	var drawObjects = [];
 
 	Object.defineProperty(that, "Entities", {
 		get: function(){ return entities; }
@@ -35,12 +36,14 @@ Lynx.Layer = function(pParent, pIndex)
 	* @this {Lynx.Layer}
 	* @param {Lynx.Entity} <pEntity> The entity to add
 	*/	
-	that.AddEntity = function(pEntity)
+	that.AddEntity = (function(pEntity)
 	{
 		pEntity.Parent = this;
 		pEntity.CanvasElement.Layer = this.Index;
 		entities.push(pEntity);
-	};
+		drawObjects.push(pEntity.CanvasElement);
+		drawObjects.sort(this.SortMethod);
+	}).bind(that);
 
 	/**
 	* Description: Removes an entity from the layer
@@ -50,8 +53,11 @@ Lynx.Layer = function(pParent, pIndex)
 	*/	
 	that.RemoveEntity = function(pEntity)
 	{
-		if(entities.indexOf(pEntity) > -1)
-			entities.splice(entities.indexOf(pEntity), 1);
+		if(entities.indexOf(pEntity) < 0)
+			return;
+
+		entities.splice(entities.indexOf(pEntity), 1);
+		drawObjects.splice(drawObjects.indexOf(pEntity.CanvasElement), 1);
 	};
 
 
@@ -59,23 +65,45 @@ Lynx.Layer = function(pParent, pIndex)
 	* Description: Adds an element to the layer
 	*
 	* @this {Lynx.Layer}
-	* @param {Lynx.Element} <pElement> The Element to add
+	* @param {Lynx.CanvasElement} <pElement> The Element to add
 	*/	
 	that.AddElement = function(pElement)
 	{
 		elements.push(pElement);
+		drawObjects.sort(this.SortMethod);
 	};
 
 	/**
 	* Description: Removes an element from the layer
 	*
 	* @this {Lynx.Layer}
-	* @param {Lynx.Element} <pElement> The Element to remove
+	* @param {Lynx.CanvasElement} <pElement> The Element to remove
 	*/	
 	that.RemoveElement = function(pElement)
 	{
-		if(elements.indexOf(pElement) > -1)
-			elements.splice(elements.indexOf(pElement));
+		if(elements.indexOf(pElement) < 0)
+			return;
+
+		elements.splice(elements.indexOf(pElement), 1);
+		drawObjects.splice(drawObjects.indexOf(pElement), 1);
+	};
+
+	/**
+	* Description: Sorts and optimizes all drawable objects
+	* 
+	* @this {Lynx.Layer}
+	* @param {Lynx.CanvasElement} <pA> the first element to test
+	* @param {Lynx.CanvasElement} <pB> the second element to test
+	* @return {int} Which element to use.
+	*/
+	that.SortMethod = function(pA, pB)
+	{
+		if(pA.Color.Hex == pB.Color.Hex)
+			return 0;
+		else if(pA.Color.Hex > pB.Color.Hex)
+			return 1;
+
+		return -1;
 	};
 
 	/**
@@ -86,30 +114,7 @@ Lynx.Layer = function(pParent, pIndex)
 	*/
 	that.GetDrawableObjects = function(pViewArea)
 	{
-		var toReturn = ([]).concat(elements);
-
-		if(!pViewArea)
-		{
-			for(var i in entities)
-				toReturn.push(entities[i].CanvasElement);
-		}
-		else
-		{
-			for(var i in entities)
-			{
-				var ex1 = entities[i].X;
-				var ex2 = ex1 + entities[i].Width;
-				var ey1 = entities[i].Y;
-				var ey2 = ey1 + entities[i].Height;
-
-				if(ex1 > pViewArea.X + pViewArea.Width || ex2 < pViewArea.X || ey1 > pViewArea.Y + pViewArea.Height || ey2 < pViewArea.Y)
-					continue;
-
-				toReturn.push(entities[i].CanvasElement);
-			}
-		}
-
-		return toReturn;
+		return drawObjects;
 	};
 
 	return that;
