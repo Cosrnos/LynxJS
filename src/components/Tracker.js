@@ -126,9 +126,9 @@
 				var ctx = buffer.getContext("2d");
 				ctx.fillStyle = "rgba(0,255,155,1)";
 				ctx.clearRect(0,0,buffer.width, buffer.height);
-				ctx.drawImage(fpsCanv, -1, 0, buffer.width, buffer.height);
+				ctx.drawImage(fpsCanv, -2, 0, buffer.width, buffer.height);
 				var offset = 120 - Math.floor(fps);
-				ctx.fillRect(buffer.width-1, offset, 1, Math.floor(fps));
+				ctx.fillRect(buffer.width-2, offset, 2, Math.floor(fps));
 
 				fpsCanv.getContext("2d").clearRect(0, 0, fpsCanv.width, fpsCanv.height);
 				fpsCanv.getContext("2d").drawImage(buffer, 0, 0, fpsCanv.width, fpsCanv.height);
