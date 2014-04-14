@@ -11,12 +11,15 @@
 *    Global Variables: Lynx.SceneBuilder
 */
 
-Lynx.SceneBuilder = function(pName)
+Lynx.SceneBuilder = function(pName, pWidth, pHeight)
 {
 	var that = new Lynx.Object();
 
 	that.Name = pName;
 	that.Camera = { X: 0, Y: 0 };
+
+	that.Width = pWidth || 1000;
+	that.Height = pHeight || 1000;
 
 	var layers = [ new Lynx.Layer(this, 0) ];
 
@@ -39,7 +42,7 @@ Lynx.SceneBuilder = function(pName)
 			var toReturn = [];
 
 			for(var i = 0; i < layers.length; i++)
-				toReturn.concat(layers[i].Entities);
+				toReturn = toReturn.concat(layers[i].Entities);
 
 			return toReturn;
 		}
@@ -95,7 +98,20 @@ Lynx.SceneBuilder = function(pName)
 	that.AddEntity = function(pEntity)
 	{
 		layers[layers.length-1].AddEntity(pEntity);
+		Lynx.Emit("SceneBuilder.AddEntity", pEntity);
 	};
+
+	that.RemoveEntity = function(pEntity)
+	{
+		layers[layers.length-1].RemoveEntity(pEntity);
+		Lynx.Emit("SceneBuilder.RemoveEntity", pEntity);
+	}
+
+	that.AddElement = function(pElement)
+	{
+		layers[layers.length-1].AddElement(pElement);
+		Lynx.Emit("SceneBuilder.AddElement", pElement);
+	}
 
 	/**
 	* Description: Called by the engine when the scene is initially being Opened

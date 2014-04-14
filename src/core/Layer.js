@@ -70,6 +70,7 @@ Lynx.Layer = function(pParent, pIndex)
 	that.AddElement = function(pElement)
 	{
 		elements.push(pElement);
+		drawObjects.push(pElement);
 		drawObjects.sort(this.SortMethod);
 	};
 

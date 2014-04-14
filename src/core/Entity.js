@@ -16,6 +16,7 @@ Lynx.Entity = function(pImage)
 	var that = new Lynx.Object();
 
 	that.Parent = null;
+	that.Species = "Generic";
 
 	//Construct
 	var x = 0,

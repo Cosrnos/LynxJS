@@ -41,6 +41,12 @@ Lynx.Viewport = function(pId){
 
 	that.Renderer.RefreshContext();
 
+	if(Lynx.Scene.Name == "lynx-default" && Lynx.Scene.Width == 1000 && Lynx.Scene.Height == 1000)
+	{
+		Lynx.Scene.Width = that.Width;
+		Lynx.Scene.Height = that.Height;
+	}
+
 	if(document.getElementById(that.Id) == null)
 		throw "Failed to bind Viewport to DOM Object with ID "+pId+". Either the object doesn't exist or something else is afoot.";
 

@@ -30,12 +30,15 @@ Lynx.Quadtree = function(pIndex, pLimit, pMax, pBounds){
 	that.Split = function()
 	{
 		//We're assuming that the split is forced since the check for limit is already checked in the insert method.
+		if(index == limit-1)
+			return;
+
 		var newWidth = this.Bounds.X / 2;
 		var newHeight = this.Bounds.Y / 2;
-		nodes[0] = new Lynx.Quadtree(index+1, limit, new Lynx.Rect(this.Bounds.X, this.Bounds.Y, newWidth, newHeight));
-		nodes[1] = new Lynx.Quadtree(index+1, limit, new Lynx.Rect(this.Bounds.X+newWidth, this.Bounds.Y, newWidth, newHeight));
-		nodes[2] = new Lynx.Quadtree(index+1, limit, new Lynx.Rect(this.Bounds.X+newWidth, this.Bounds.Y+newHeight, newWidth, newHeight));
-		nodes[3] = new Lynx.Quadtree(index+1, limit, new Lynx.Rect(this.Bounds.X, this.Bounds.Y+newHeight, newWidth, newHeight));
+		nodes[0] = new Lynx.Quadtree(index+1, limit, max, new Lynx.Rect(this.Bounds.X, this.Bounds.Y, newWidth, newHeight));
+		nodes[1] = new Lynx.Quadtree(index+1, limit, max, new Lynx.Rect(this.Bounds.X+newWidth, this.Bounds.Y, newWidth, newHeight));
+		nodes[2] = new Lynx.Quadtree(index+1, limit, max, new Lynx.Rect(this.Bounds.X+newWidth, this.Bounds.Y+newHeight, newWidth, newHeight));
+		nodes[3] = new Lynx.Quadtree(index+1, limit, max, new Lynx.Rect(this.Bounds.X, this.Bounds.Y+newHeight, newWidth, newHeight));
 		//Rebuild Objects
 		var tempObjects = objects; //Only need to clone internal objects since nodes are just now being created.
 
@@ -66,7 +69,7 @@ Lynx.Quadtree = function(pIndex, pLimit, pMax, pBounds){
 		}
 
 		objects.push(pObject);
-		if(this.objects.length > limit && index < max)
+		if(objects.length > limit && index < max && typeof nodes[0] != 'undefined')
 			this.Split();
 	}
 
@@ -154,10 +157,9 @@ Lynx.Quadtree = function(pIndex, pLimit, pMax, pBounds){
 		}
 
 		//Test Super objects since they could collide? We need to decide what constitutes as in region, meaning only contained within or even remotely close to.
-		for(var i in objects)
+		for(var i = 0; i < objects.length; i++)
 		{
-			if(pRect.X <= objects[i] && pRect.Y <= objects[i] && pRect.Width >= objects[i] && pRect.Height >= objects[i])
-				toReturn.push(objects[i]);
+			toReturn.push(objects[i]);
 		}
 
 		return toReturn;
