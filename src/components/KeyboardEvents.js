@@ -86,7 +86,7 @@
 			var keyCode = event.keyCode;
 			var keyName = parseKey(keyCode);
 
-			if(keyboard[keyCode] == 'undefined')
+			if(!keyboard[keyCode])
 				keyboard[keyCode] = this.KeyState.UP;
 			if(keyboard[keyCode] == this.KeyState.DOWN)
 				keyboard[keyCode] = this.KeyState.HELD;
