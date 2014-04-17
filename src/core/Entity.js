@@ -11,7 +11,7 @@
 *    Global Variables: Lynx.Entity, Lynx.E
 */
 
-Lynx.Entity = function(pImage)
+Lynx.Entity = function()
 {
 	var that = new Lynx.Object();
 
@@ -24,26 +24,32 @@ Lynx.Entity = function(pImage)
 		width = 1,
 		height = 1;
 
-	if(!pImage)
+	if(arguments.length < 1)
 	{
-		Lynx.Warning("A ghost entity has been created, please make sure to initialize all entities to avoid conflicts.");
+		return Lynx.Warning("A ghost entity has been created, please make sure to initialize all entities to avoid conflicts.");
 	}
-	else if(pImage[0] instanceof Image)
+	
+	var pArg = arguments;
+
+	if(Object.prototype.toString.call(arguments[0]) == "[object Arguments]")
+		pArg = arguments[0];
+
+	if(pArg[0] instanceof Image)
 	{
-		width = pImage[0].width;
-		height = pImage[0].height;
+		width = pArg[0].width;
+		height = pArg[0].height;
 	}
 	else
 	{
-		if(typeof arguments[0] === 'number')
+		if(typeof pArg[0] === 'number')
 		{
-			x = arguments[0];
-			y = arguments[1];
+			x = pArg[0];
+			y = pArg[1];
 
-			if(arguments.length == 4)
+			if(pArg.length == 4)
 			{
-				width = arguments[2];
-				height = arguments[3];
+				width = pArg[2];
+				height = pArg[3];
 			}
 		}
 	}
@@ -52,8 +58,8 @@ Lynx.Entity = function(pImage)
 	var canvasElement = new Lynx.CE(x, y, width, height, "entity");
 	var bounds = new Lynx.Rect(x, y, width, height);
 
-	if(pImage[0] instanceof Image)
-		canvasElement.Texture = pImage[0];
+	if(pArg[0] instanceof Image)
+		canvasElement.Texture = pArg[0];
 
 	Object.defineProperty(that, "CanvasElement", {
 		get: function()
