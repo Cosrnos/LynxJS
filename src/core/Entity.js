@@ -33,17 +33,17 @@ Lynx.Entity = function(pImage)
 		width = pImage[0].width;
 		height = pImage[0].height;
 	}
-	else if(Object.prototype.toString.call(pImage) == '[object Arguments]')
+	else
 	{
-		if(typeof pImage[0] === 'number')
+		if(typeof arguments[0] === 'number')
 		{
-			x = pImage[0];
-			y = pImage[1];
+			x = arguments[0];
+			y = arguments[1];
 
-			if(pImage.length == 4)
+			if(arguments.length == 4)
 			{
-				width = pImage[2];
-				height = pImage[3];
+				width = arguments[2];
+				height = arguments[3];
 			}
 		}
 	}

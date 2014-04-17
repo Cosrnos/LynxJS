@@ -169,7 +169,7 @@ var Lynx = (function()
 		//Threads
 		this.Main = new Lynx.Thread("Main");
 		this.Main.On("_threadUpdateMain",function(pSender){
-			if(!Lynx.DocumentHidden()){
+			if(!Lynx.DocumentHidden){
 				Lynx.Emit("beforeUpdate", pSender);
 				Lynx.Emit("Update",pSender);
 				Lynx.Emit("afterUpdate", pSender);
@@ -241,9 +241,11 @@ var Lynx = (function()
 	*
 	* @this {LynxLibrary}
 	*/
-	that.DocumentHidden = function(){
+	Object.defineProperty(that, "DocumentHidden", {
+		get: function(){
 		return document.hidden || document.msHidden || document.webkitHidden || document.mozHidden;
-	}
+		}
+	});
 
 	return that;
 })();

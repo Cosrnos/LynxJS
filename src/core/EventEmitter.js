@@ -23,7 +23,7 @@ Lynx.EventEmitter = function(){
 	* @param {String} <pEvent> name of event to subscribe to
 	* @param {Lynx.EventListener} <pEventListener> Listener to subscribe
 	*/	
-	that.Subscribe = (function(pEvent,pEventListener)
+	that.Subscribe = (function(pEvent, pEventListener)
 	{
 		if(typeof events[pEvent] == 'undefined')
 			events[pEvent] = [];

@@ -116,7 +116,7 @@
 			
 			if(now != lastUpdate)
 			{
-				fps = thisFps;
+				fps += ((thisFps + fps)/2 - fps) / 60;
 				lastUpdate = now;	
 				count++;
 			}
