@@ -1,18 +1,17 @@
 /*
-*    Lynx Project
-*    Started August 2013
-*    ------------------------------------------------------
-*    This file is covered under the LynxJS Game Library
-*    License. Please read license.txt for more information
-*    on usage of this library.
-*    ------------------------------------------------------
-*    File Name: Entity.js
-*    Description: A game object that is in some way interactable.
-*    Global Variables: Lynx.Entity, Lynx.E
-*/
+ *    Lynx Project
+ *    Started August 2013
+ *    ------------------------------------------------------
+ *    This file is covered under the LynxJS Game Library
+ *    License. Please read license.txt for more information
+ *    on usage of this library.
+ *    ------------------------------------------------------
+ *    File Name: Entity.js
+ *    Description: A game object that is in some way interactable.
+ *    Global Variables: Lynx.Entity, Lynx.E
+ */
 
-Lynx.Entity = function()
-{
+Lynx.Entity = function () {
 	var that = new Lynx.Object();
 
 	that.Parent = null;
@@ -24,30 +23,25 @@ Lynx.Entity = function()
 		width = 1,
 		height = 1;
 
-	if(arguments.length < 1)
-	{
+	if (arguments.length < 1) {
 		return Lynx.Warning("A ghost entity has been created, please make sure to initialize all entities to avoid conflicts.");
 	}
-	
+
 	var pArg = arguments;
 
-	if(Object.prototype.toString.call(arguments[0]) == "[object Arguments]")
+	if (Object.prototype.toString.call(arguments[0]) == "[object Arguments]") {
 		pArg = arguments[0];
+	}
 
-	if(pArg[0] instanceof Image)
-	{
+	if (pArg[0] instanceof Image) {
 		width = pArg[0].width;
 		height = pArg[0].height;
-	}
-	else
-	{
-		if(typeof pArg[0] === 'number')
-		{
+	} else {
+		if (typeof pArg[0] === 'number') {
 			x = pArg[0];
 			y = pArg[1];
 
-			if(pArg.length == 4)
-			{
+			if (pArg.length == 4) {
 				width = pArg[2];
 				height = pArg[3];
 			}
@@ -58,37 +52,36 @@ Lynx.Entity = function()
 	var canvasElement = new Lynx.CE(x, y, width, height, "entity");
 	var bounds = new Lynx.Rect(x, y, width, height);
 
-	if(pArg[0] instanceof Image)
+	if (pArg[0] instanceof Image) {
 		canvasElement.Texture = pArg[0];
+	}
 
 	Object.defineProperty(that, "CanvasElement", {
-		get: function()
-		{
+		get: function () {
 			return canvasElement;
 		}
 	});
 
 	Object.defineProperty(that, "Bounds", {
-		get: function()
-		{
+		get: function () {
 			return bounds;
 		}
 	});
 
 	/**
-	* Description: Returns/Updates all associated X Positions within the Entity
-	*
-	* @this {Lynx.Entity}
-	*/	
+	 * Description: Returns/Updates all associated X Positions within the Entity
+	 *
+	 * @this {Lynx.Entity}
+	 */
 	Object.defineProperty(that, "X", {
-		get: function()
-		{
+		get: function () {
 			return x;
 		},
-		set: function(pX)
-		{
-			if(isNaN(pX))
+		set: function (pX) {
+			if (isNaN(pX)) {
 				return;
+			}
+
 			x = pX;
 			bounds.X = pX;
 			canvasElement.X = pX;
@@ -96,17 +89,15 @@ Lynx.Entity = function()
 	});
 
 	/**
-	* Description: Returns/Updates all associated Y Positions within the Entity
-	*
-	* @this {Lynx.Entity}
-	*/	
+	 * Description: Returns/Updates all associated Y Positions within the Entity
+	 *
+	 * @this {Lynx.Entity}
+	 */
 	Object.defineProperty(that, "Y", {
-		get: function()
-		{
+		get: function () {
 			return y;
 		},
-		set: function(pY)
-		{
+		set: function (pY) {
 			y = pY;
 			bounds.Y = pY;
 			canvasElement.Y = pY;
@@ -114,17 +105,15 @@ Lynx.Entity = function()
 	});
 
 	/**
-	* Description: Returns/Updates all associated Widths within the Entity
-	*
-	* @this {Lynx.Entity}
-	*/	
+	 * Description: Returns/Updates all associated Widths within the Entity
+	 *
+	 * @this {Lynx.Entity}
+	 */
 	Object.defineProperty(that, "Width", {
-		get: function()
-		{
+		get: function () {
 			return width;
 		},
-		set: function(pWidth)
-		{
+		set: function (pWidth) {
 			width = pWidth;
 			bounds.Width = pWidth;
 			canvasElement.Width = pWidth;
@@ -132,17 +121,15 @@ Lynx.Entity = function()
 	});
 
 	/**
-	* Description: Returns/Updates all associated Heights within the Entity
-	*
-	* @this {Lynx.Entity}
-	*/	
+	 * Description: Returns/Updates all associated Heights within the Entity
+	 *
+	 * @this {Lynx.Entity}
+	 */
 	Object.defineProperty(that, "Height", {
-		get: function()
-		{
+		get: function () {
 			return height;
 		},
-		set: function(pHeight)
-		{
+		set: function (pHeight) {
 			height = pHeight;
 			bounds.Height = pHeight;
 			canvasElement.Height = pHeight;
@@ -150,17 +137,15 @@ Lynx.Entity = function()
 	});
 
 	/**
-	* Description: Easy accessor for CanvasElement.Color
-	*
-	* @this {Lynx.Entity}
-	*/	
+	 * Description: Easy accessor for CanvasElement.Color
+	 *
+	 * @this {Lynx.Entity}
+	 */
 	Object.defineProperty(that, "Color", {
-		get: function()
-		{
+		get: function () {
 			return canvasElement.Color;
 		},
-		set: function(pValue)
-		{
+		set: function (pValue) {
 			canvasElement.Color = pValue;
 		}
 	});
@@ -168,6 +153,8 @@ Lynx.Entity = function()
 	Lynx.Emit("Entity.Create");
 
 	return that;
-}
+};
 
-Lynx.E = function(){ return Lynx.Entity(arguments); }
+Lynx.E = function () {
+	return Lynx.Entity(arguments);
+};

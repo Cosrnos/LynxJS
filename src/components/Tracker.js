@@ -1,23 +1,23 @@
 /*
-*    Lynx Project
-*    Started August 2013
-*    ------------------------------------------------------
-*    This file is covered under the LynxJS Game Library
-*    License. Please read license.txt for more information
-*    on usage of this library.
-*    ------------------------------------------------------
-*    Component Name: Tracker
-*    Author: Cosrnos
-*    Description: Tracking component for various lynx statistics
-*/
+ *    Lynx Project
+ *    Started August 2013
+ *    ------------------------------------------------------
+ *    This file is covered under the LynxJS Game Library
+ *    License. Please read license.txt for more information
+ *    on usage of this library.
+ *    ------------------------------------------------------
+ *    Component Name: Tracker
+ *    Author: Cosrnos
+ *    Description: Tracking component for various lynx statistics
+ */
 
 
-(function(){
+(function () {
 	var name = "Tracker";
 	var auth = "Cosrnos";
 	var desc = "Tracking component for various lynx statistics";
 
-	var build = function(){
+	var build = function () {
 		var fpsCanv = document.createElement("canvas");
 		var ftCanv = document.createElement("canvas");
 		var utCanv = document.createElement("canvas");
@@ -43,8 +43,7 @@
 		var buffer = document.createElement("canvas");
 		var frameStart = 0;
 
-		var container = document.createElement("div");
-		{
+		var container = document.createElement("div"); {
 			container.id = "Lynx-Tracker-Container";
 			container.style.position = "absolute";
 			container.style.top = "0";
@@ -100,60 +99,64 @@
 		var updateStart = 0;
 		var updateFinish = 0;
 
-		this.On("beforeUpdate", function(){ updateStart = Date.now(); });
-		this.On("afterUpdate", function(){ updateFinish = Date.now(); });
+		this.On("beforeUpdate", function () {
+			updateStart = Date.now();
+		});
+		this.On("afterUpdate", function () {
+			updateFinish = Date.now();
+		});
 
-		this.On("beforeRequestAnimationFrame", function(){ frameStart = Date.now(); });
+		this.On("beforeRequestAnimationFrame", function () {
+			frameStart = Date.now();
+		});
 		this.On("afterRequestAnimationFrame", drawUpdates);
 
-		function drawUpdates()
-		{
-			if(!this.Settings.Enabled)
+		function drawUpdates() {
+			if (!this.Settings.Enabled) {
 				return true;
+			}
 
 			var now = Date.now();
 			var thisFps = 1000 / (now - lastUpdate);
-			
-			if(now != lastUpdate)
-			{
-				fps += ((thisFps + fps)/2 - fps) / 60;
-				lastUpdate = now;	
+
+			if (now != lastUpdate) {
+				fps += ((thisFps + fps) / 2 - fps) / 60;
+				lastUpdate = now;
 				count++;
 			}
 
-			if(count % 15 == 0)
-			{
+			if (count % 15 === 0) {
 				var ctx = buffer.getContext("2d");
 				ctx.fillStyle = "rgba(0,255,155,1)";
-				ctx.clearRect(0,0,buffer.width, buffer.height);
+				ctx.clearRect(0, 0, buffer.width, buffer.height);
 				ctx.drawImage(fpsCanv, -2, 0, buffer.width, buffer.height);
 				var offset = 120 - Math.floor(fps);
-				ctx.fillRect(buffer.width-2, offset, 2, Math.floor(fps));
+				ctx.fillRect(buffer.width - 2, offset, 2, Math.floor(fps));
 
 				fpsCanv.getContext("2d").clearRect(0, 0, fpsCanv.width, fpsCanv.height);
 				fpsCanv.getContext("2d").drawImage(buffer, 0, 0, fpsCanv.width, fpsCanv.height);
 
 				var ft = (Date.now() - frameStart);
 
-				ctx.clearRect(0,0, buffer.width, buffer.height);
+				ctx.clearRect(0, 0, buffer.width, buffer.height);
 				ctx.drawImage(ftCanv, -2, 0, buffer.width, buffer.height);
 				ctx.fillStyle = "rgba(15, 75, 255, 1)";
-				ctx.fillRect(buffer.width-2, 120 - ft * 3, 2, ft * 3);
+				ctx.fillRect(buffer.width - 2, 120 - ft * 3, 2, ft * 3);
 
-				ftCanv.getContext("2d").clearRect(0,0,ftCanv.width, ftCanv.height);
+				ftCanv.getContext("2d").clearRect(0, 0, ftCanv.width, ftCanv.height);
 				ftCanv.getContext("2d").drawImage(buffer, 0, 0, ftCanv.width, ftCanv.height);
 
 				var ut = updateFinish - updateStart;
 
-				ctx.clearRect(0,0, buffer.width, buffer.height);
+				ctx.clearRect(0, 0, buffer.width, buffer.height);
 				ctx.drawImage(utCanv, -2, 0, buffer.width, buffer.height);
 				ctx.fillStyle = "rgba(255, 155, 15, 1)";
-				ctx.fillRect(buffer.width-2, 120 - ut * 2, 2, ut * 2);
+				ctx.fillRect(buffer.width - 2, 120 - ut * 2, 2, ut * 2);
 
-				utCanv.getContext("2d").clearRect(0,0,utCanv.width, utCanv.height);
+				utCanv.getContext("2d").clearRect(0, 0, utCanv.width, utCanv.height);
 				utCanv.getContext("2d").drawImage(buffer, 0, 0, utCanv.width, utCanv.height);
 
-				fpsOut.innerHTML = fps.toFixed(1);		
+				fpsOut.innerHTML = fps.toFixed(1);
 				ftOut.innerHTML = ft + "ms";
 				utOut.innerHTML = ut + "ms";
 			}
