@@ -293,9 +293,9 @@ Lynx.Asset = function () {
 	return {
 		Name: "",
 		Filepath: "",
-		Type: "", //TODO: 'Enum' for this
+		Type: "",
 		Asset: null,
-		Status: 0 //TODO: 'Enum' for this
+		Status: 0
 	};
 };
 
