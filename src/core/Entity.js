@@ -148,8 +148,34 @@ Lynx.Entity = function () {
 		}
 	});
 
+	/**
+	 * Description: Translates the element to the given coordinates
+	 *
+	 * @this {Lynx.CanvasElement}
+	 */
+	this.Translate = (function (pX, pY) {
+		if (isNaN(pX) || isNaN(pY)) {
+			return false;
+		}
+		this.X = pX;
+		this.Y = pY;
+	}).bind(this);
+
+	/**
+	 * Description: Moves the element by the given coordinates
+	 *
+	 * @this {Lynx.Entity}
+	 */
+	this.Move = (function (pX, pY) {
+		if (isNaN(pX) || isNaN(pY)) {
+			return false;
+		}
+		this.X += pX;
+		this.Y += pY;
+	}).bind(this);
+
 	Lynx.Emit("Entity.Create");
-}
+};
 
 Lynx.Entity.prototype = new Lynx.Object();
 

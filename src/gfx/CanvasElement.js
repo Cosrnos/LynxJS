@@ -30,6 +30,32 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 	that.Layer = 0;
 
 	/**
+	 * Description: Translates the element to the given coordinates
+	 *
+	 * @this {Lynx.CanvasElement}
+	 */
+	that.Translate = (function (pX, pY) {
+		if (isNaN(pX) || isNaN(pY)) {
+			return false;
+		}
+		this.X = pX;
+		this.Y = pY;
+	}).bind(that);
+
+	/**
+	 * Description: Moves the element by the given coordinates
+	 *
+	 * @this {Lynx.CanvasElement}
+	 */
+	that.Move = (function (pX, pY) {
+		if (isNaN(pX) || isNaN(pY)) {
+			return false;
+		}
+		this.X += pX;
+		this.Y += pY;
+	}).bind(that);
+
+	/**
 	 * Description: A property for the objects color.
 	 *
 	 * @this {Lynx.CanvasElement}
