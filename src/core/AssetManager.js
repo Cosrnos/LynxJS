@@ -166,8 +166,12 @@ Lynx.AssetManager = (function () {
 	 * @param {Callback} <pCallback> Callback to be executed when all Assets have been loaded
 	 */
 	that.LoadQueue = function (pCallback) {
-		if (processing || queue.length <= 0) {
+		if (processing) {
 			return;
+		}
+
+		if (queue.length <= 0) {
+			pCallback();
 		}
 
 		processing = true;
