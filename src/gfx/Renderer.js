@@ -109,10 +109,21 @@ Lynx.Renderer = function (pCanvas) {
 		var lastShaderColor = null;
 		var hasContext = false;
 		var blankTexture = null;
+		var textures = [];
 		var texCoordBuffer = null,
 			positionBuffer = null;
 
 		var ready = false;
+
+		/**
+		 * A webgl rendering texture object
+		 *
+		 * @this {Lynx.Renderer.Texture}
+		 */
+		var Texture = function (pImage, pTexture) {
+			this.Image = pImage;
+			this.Texture = pTexture
+		};
 
 		/**
 		 * Description: Refreshes the WebGL program and shaders.
@@ -316,11 +327,11 @@ Lynx.Renderer = function (pCanvas) {
 				}
 
 				if (o.Color.Hex == -1 && o.Texture !== false) {
-					if (o.Texture != lastTexture) {
+					if (lastTexture == null || lastTexture.Image.src != o.Texture.src) {
 						renderBatch(buildArray);
 						buildArray = [];
 
-						if (o.Texture instanceof Image) {
+						if (typeof textures[o.Texture.src] === 'undefined') {
 							var tempText = gl.createTexture();
 							gl.bindTexture(gl.TEXTURE_2D, tempText);
 
@@ -332,8 +343,9 @@ Lynx.Renderer = function (pCanvas) {
 
 							gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, o.Texture);
 
-							o.Texture = tempText;
+							textures[o.Texture.src] = new Texture(o.Texture, tempText);
 						}
+						var tex = textures[o.Texture.src];
 
 						var texCoordLocation = vertexShader.GetVariable("texCoord", "attribute").Location;
 						gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
@@ -347,9 +359,9 @@ Lynx.Renderer = function (pCanvas) {
 							1.0, 0.0,
 							0.0, 0.0
 						]), gl.STATIC_DRAW);
-						gl.bindTexture(gl.TEXTURE_2D, o.Texture);
+						gl.bindTexture(gl.TEXTURE_2D, tex.Texture);
 
-						lastTexture = o.Texture;
+						lastTexture = tex;
 
 						gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 						gl.vertexAttribPointer(vertexShader.GetVariable("position", "attribute").Location, 2, gl.FLOAT, false, 0, 0);

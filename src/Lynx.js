@@ -184,6 +184,9 @@ var Lynx = (function () {
 	 */
 	var detectGL = (function () {
 		if (!(window.WebGLRenderingContext) || Lynx.DisableWebGL) { //Context doesn't exist, fallback to 2D.
+			if (Lynx.Debug) {
+				Lynx.Log("Info", "WebGL Rendering is either unsupported or disabled.");
+			}
 			return;
 		}
 
