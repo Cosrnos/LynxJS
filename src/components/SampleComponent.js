@@ -11,7 +11,7 @@
  *    Description: This is a sample component for LynxJS!
  */
 
-(function () {
+(function buildComponent_SampleComponent() {
 	var name = "SampleComponent";
 	var auth = "Cosrnos";
 	var desc = "This is a sample component for LynxJS!";
@@ -22,5 +22,5 @@
 		};
 	};
 
-	Lynx.Component(name, auth, desc, build);
+	new Lynx.Component(name, auth, desc, build);
 })();

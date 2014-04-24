@@ -12,8 +12,6 @@
  */
 
 Lynx.Component = function (pName, pAuthor, pDescription, pBuildCallback) {
-	var that = new Lynx.Object();
-
 	/** Description: Called before automatic registration. Set in pBuildCallback
 	 */
 	var beforeRegister = pBuildCallback || function () {
@@ -22,23 +20,23 @@ Lynx.Component = function (pName, pAuthor, pDescription, pBuildCallback) {
 
 	/** Description: Name of the component
 	 */
-	that.Name = pName;
+	this.Name = pName;
 
 	/** Description: Author of the component
 	 */
-	that.Author = pAuthor;
+	this.Author = pAuthor;
 
 	/** Description: Description of the component.
 	 */
-	that.Description = pDescription;
+	this.Description = pDescription;
 
 	//base methods to go here~
 
 	//Below is to ensure automatic registration if no return is set~
-	var autoRegister = beforeRegister.apply(that) || true;
+	var autoRegister = beforeRegister.apply(this) || true;
 
 	if (autoRegister)
-		Lynx.CM.Register(that.Name, that);
-
-	return that;
+		Lynx.CM.Register(this.Name, this);
 };
+
+Lynx.Component.prototype = new Lynx.Object();

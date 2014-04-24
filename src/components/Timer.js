@@ -12,7 +12,7 @@
  */
 
 
-(function () {
+(function buildComponent_Timer() {
 	var name = "Timer";
 	var auth = "Cosrnos";
 	var desc = "Simple event timer";
@@ -99,5 +99,5 @@
 		}
 	};
 
-	Lynx.Component(name, auth, desc, build);
+	new Lynx.Component(name, auth, desc, build);
 })();

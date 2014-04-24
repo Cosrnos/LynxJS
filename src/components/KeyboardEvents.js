@@ -15,7 +15,7 @@
 // not just across the canvas since Lynx supports multiple
 // canvas positions.
 
-(function () {
+(function buildComponent_KeyboardEvents() {
 	var name = "KeyboardEvents";
 	var auth = "Cosrnos";
 	var desc = "Simple keyboard event tracker.";
@@ -120,5 +120,5 @@
 		}).bind(this), false);
 	};
 
-	Lynx.Component(name, auth, desc, build);
+	new Lynx.Component(name, auth, desc, build);
 })();

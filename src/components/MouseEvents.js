@@ -17,7 +17,7 @@
 // canvas positions. Please use Canvas{}.ParsePosition to get
 // the position on the canvas itself
 
-(function () {
+(function buildComponent_MouseEvents() {
 	var name = "MouseEvents";
 	var auth = "Cosrnos";
 	var desc = "Simple mouse event tracker.";
@@ -65,5 +65,5 @@
 		}).bind(this), false);
 	};
 
-	Lynx.Component(name, auth, desc, build);
+	new Lynx.Component(name, auth, desc, build);
 })();

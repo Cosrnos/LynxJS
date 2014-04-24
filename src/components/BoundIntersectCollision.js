@@ -12,7 +12,7 @@
  */
 
 
-(function () {
+(function buildComponent_BoundIntersectCollision() {
 	var name = "BoundIntersectCollision";
 	var auth = "Cosrnos";
 	var desc = "Collision detection using the bounds intersect method and a quadtree.";
@@ -45,5 +45,5 @@
 		});
 	};
 
-	Lynx.Component(name, auth, desc, build);
+	new Lynx.Component(name, auth, desc, build);
 })();

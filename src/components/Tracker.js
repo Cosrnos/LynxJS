@@ -12,7 +12,7 @@
  */
 
 
-(function () {
+(function buildComponent_Tracker() {
 	var name = "Tracker";
 	var auth = "Cosrnos";
 	var desc = "Tracking component for various lynx statistics";
@@ -112,7 +112,7 @@
 		this.On("afterRequestAnimationFrame", drawUpdates);
 
 		function drawUpdates() {
-			if (!this.Settings.Enabled) {
+			if (!component.Settings.Enabled) {
 				return true;
 			}
 
@@ -165,5 +165,5 @@
 		}
 	};
 
-	Lynx.Component(name, auth, desc, build);
+	var component = new Lynx.Component(name, auth, desc, build);
 })();
