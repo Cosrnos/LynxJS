@@ -119,6 +119,34 @@ Lynx.Entity = function () {
 	});
 
 	/**
+	 * Description: Returns/Updates the canvasElement texture
+	 *
+	 * @this {Lynx.Entity}
+	 */
+	Object.defineProperty(this, "Texture", {
+		get: function () {
+			return canvasElement.Texture;
+		},
+		set: function (pValue) {
+			canvasElement.Texture = pValue;
+		}
+	});
+
+	/**
+	 * Description: Returns/Updates the canvas element's frame interval
+	 *
+	 * @this {Lynx.Entity}
+	 */
+	Object.defineProperty(this, "FrameInterval", {
+		get: function () {
+			return canvasElement.FrameInterval;
+		},
+		set: function (pValue) {
+			canvasElement.FrameInterval = pValue;
+		}
+	});
+
+	/**
 	 * Description: Returns/Updates all associated Heights within the Entity
 	 *
 	 * @this {Lynx.Entity}

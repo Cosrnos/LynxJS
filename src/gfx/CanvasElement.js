@@ -20,7 +20,10 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 		G: -1,
 		B: -1
 	};
+
 	var objectTexture = null;
+	var currentFrame = -1;
+	var frameInterval = 4;
 
 	that.X = pX;
 	that.Y = pY;
@@ -89,14 +92,40 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 				return false;
 			}
 
+			if (objectTexture instanceof Array) {
+				return objectTexture[Math.floor(currentFrame / frameInterval) % objectTexture.length];
+			}
+
 			return objectTexture;
 		},
 		set: function (pImage) {
 			if (pImage instanceof Image || pImage instanceof WebGLTexture) {
 				objectTexture = pImage;
+				currentFrame = -1;
+			} else if (pImage instanceof Array) {
+				objectTexture = pImage;
+				currentFrame = 0;
 			} else {
 				Lynx.Log(typeof pImage);
 			}
+		}
+	});
+
+	/**
+	 * Description: The interval at which to change the texture if the provided texture is an array.
+	 *
+	 * @this {Lynx.CanvasElement}
+	 */
+	Object.defineProperty(that, "FrameInterval", {
+		get: function () {
+			return frameInterval;
+		},
+		set: function (pValue) {
+			if (isNaN(pValue)) {
+				return;
+			}
+
+			frameInterval = pValue;
 		}
 	});
 
@@ -108,8 +137,8 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 	 * @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	 */
 	that.Draw = (function (context, pC) {
-		if (objectTexture instanceof Image) {
-			context.drawImage(objectTexture, this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);
+		if (objectTexture instanceof Image || objectTexture instanceof Array) {
+			context.drawImage(this.Texture, this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);
 		} else {
 			context.fillRect(this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);
 		}
@@ -140,7 +169,10 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 	}).bind(that);
 
 	//Event Callbacks
-	that.On("draw", function (pBuffer) {
+	that.On("requestAnimationFrame", function (pBuffer) {
+		if (objectTexture instanceof Array) {
+			currentFrame++;
+		}
 		return true;
 	});
 
