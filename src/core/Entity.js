@@ -12,10 +12,8 @@
  */
 
 Lynx.Entity = function () {
-	var that = new Lynx.Object();
-
-	that.Parent = null;
-	that.Species = "Generic";
+	this.Parent = null;
+	this.Species = "Generic";
 
 	//Construct
 	var x = 0,
@@ -56,13 +54,13 @@ Lynx.Entity = function () {
 		canvasElement.Texture = pArg[0];
 	}
 
-	Object.defineProperty(that, "CanvasElement", {
+	Object.defineProperty(this, "CanvasElement", {
 		get: function () {
 			return canvasElement;
 		}
 	});
 
-	Object.defineProperty(that, "Bounds", {
+	Object.defineProperty(this, "Bounds", {
 		get: function () {
 			return bounds;
 		}
@@ -73,7 +71,7 @@ Lynx.Entity = function () {
 	 *
 	 * @this {Lynx.Entity}
 	 */
-	Object.defineProperty(that, "X", {
+	Object.defineProperty(this, "X", {
 		get: function () {
 			return x;
 		},
@@ -93,7 +91,7 @@ Lynx.Entity = function () {
 	 *
 	 * @this {Lynx.Entity}
 	 */
-	Object.defineProperty(that, "Y", {
+	Object.defineProperty(this, "Y", {
 		get: function () {
 			return y;
 		},
@@ -109,7 +107,7 @@ Lynx.Entity = function () {
 	 *
 	 * @this {Lynx.Entity}
 	 */
-	Object.defineProperty(that, "Width", {
+	Object.defineProperty(this, "Width", {
 		get: function () {
 			return width;
 		},
@@ -125,7 +123,7 @@ Lynx.Entity = function () {
 	 *
 	 * @this {Lynx.Entity}
 	 */
-	Object.defineProperty(that, "Height", {
+	Object.defineProperty(this, "Height", {
 		get: function () {
 			return height;
 		},
@@ -141,7 +139,7 @@ Lynx.Entity = function () {
 	 *
 	 * @this {Lynx.Entity}
 	 */
-	Object.defineProperty(that, "Color", {
+	Object.defineProperty(this, "Color", {
 		get: function () {
 			return canvasElement.Color;
 		},
@@ -151,10 +149,10 @@ Lynx.Entity = function () {
 	});
 
 	Lynx.Emit("Entity.Create");
+}
 
-	return that;
-};
+Lynx.Entity.prototype = new Lynx.Object();
 
 Lynx.E = function () {
-	return Lynx.Entity(arguments);
+	return new Lynx.Entity(arguments);
 };
