@@ -29,20 +29,79 @@ Lynx.Text = function (pTextObj) {
 		size = pTextObj.FontSize;
 	}
 
+	if (pTextObj.hasOwnProperty("Color")) {
+		color = pTextObj.Color;
+	}
+
 	var tempCanv = document.createElement("canvas");
 	var ctx = tempCanv.getContext("2d");
 
-	ctx.font = "24px Helvetica";
-
-	var textSize = ctx.measureText(value);
-	tempCanv.width = textSize.width;
-	tempCanv.height = size + Math.floor(size / 2);
-
-	ctx.fillStyle = color;
-	ctx.font = "24px Helvetica";
-	ctx.fillText(value, 0, size);
 
 	var that = new Lynx.CanvasElement(0, 0, tempCanv.width, tempCanv.height, "Text");
+	that.Redraw = function () {
+		ctx.font = size + "px " + font;
+
+		var textSize = ctx.measureText(value);
+		tempCanv.width = textSize.width;
+		tempCanv.height = size + Math.floor(size / 2);
+		if (tempCanv.height % 2 !== 0) {
+			tempCanv.height += 1;
+		}
+
+		if (tempCanv.width % 2 !== 0) {
+			tempCanv.width += 1;
+		}
+
+		that.Width = tempCanv.width;
+		that.Height = tempCanv.height;
+
+		ctx.font = size + "px " + font;
+		ctx.fillStyle = color;
+		ctx.fillText(value, 0, size);
+	};
+
+	Object.defineProperty(that, "Value", {
+		get: function () {
+			return value;
+		},
+		set: function (pString) {
+			value = pString;
+			that.Redraw();
+		}
+	});
+
+	Object.defineProperty(that, "FontFamily", {
+		get: function () {
+			return font;
+		},
+		set: function (pValue) {
+			font = pValue;
+			that.Redraw();
+		}
+	});
+
+	Object.defineProperty(that, "FontSize", {
+		get: function () {
+			return size;
+		},
+		set: function (pValue) {
+			size = pValue;
+			that.Redraw();
+		}
+	});
+
+	Object.defineProperty(that, "FontColor", {
+		get: function () {
+			return color;
+		},
+		set: function (pValue) {
+			color = pValue;
+			that.Redraw();
+		}
+	});
+
+	that.Redraw();
+
 	that.Texture = tempCanv;
 
 	return that;
