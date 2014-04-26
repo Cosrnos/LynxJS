@@ -105,6 +105,9 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 			} else if (pImage instanceof Array) {
 				objectTexture = pImage;
 				currentFrame = 0;
+			} else if (Object.prototype.toString.call(pImage) === "[object HTMLCanvasElement]") {
+				objectTexture = pImage;
+				currentFrame = -1;
 			} else {
 				Lynx.Log(typeof pImage);
 			}
@@ -137,7 +140,7 @@ Lynx.CanvasElement = function (pX, pY, pWidth, pHeight, pElementType) {
 	 * @param {HTMLCanvasElement} <pBuffer> Canvas buffer to draw upon
 	 */
 	that.Draw = (function (context, pC) {
-		if (objectTexture instanceof Image || objectTexture instanceof Array) {
+		if (objectTexture !== null) {
 			context.drawImage(this.Texture, this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);
 		} else {
 			context.fillRect(this.X - pC.X, this.Y - pC.Y, this.Width, this.Height);

@@ -110,6 +110,7 @@ var Lynx = (function () {
 		load("gfx/Renderer.js");
 		load("gfx/Canvas.js");
 		load("gfx/CanvasElement.js");
+		load("gfx/Text.js");
 		load("gfx/Viewport.js");
 
 	}).bind(that);
