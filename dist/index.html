@@ -86,7 +86,7 @@
 				height: 200px;
 				width: 800px;
 				margin: 00 auto;
-				border: 8px solid #df8349;				
+				border: 8px solid #df8349;
 				overflow-y: scroll;
 				overflow-x: hidden;
 				position: relative;
@@ -109,29 +109,16 @@
 				font-family: Consolas, "Courier New", Courier, monospace;
 			}
 		</style>
-		<script src="src/Lynx.js">
-		</script>		
+		<!-- Switch these to Minified Version for Production -->
+		<script src="js/LynxJS.vendor.js">
+		</script>
+		<script src="js/LynxJS.js">
+		</script>
+
+		<!-- Start Game Logic Here! -->
 		<script type="text/javascript">
 			window.addEventListener("load",function load(event){
-				Lynx.LogTarget = "console";
-				Lynx.DisableCache = true;
-				Lynx.Debug = true;
-				Lynx.Load(function(){
-					Viewport = new Lynx.Viewport("viewport-container");
-					Viewport.ClearColor = 0x000000;
 
-					Lynx.CM.On("ComponentManager.Ready", function(){
-						Lynx.Start();
-						Lynx.Log("-------------------------------------------------------------------");
-						Lynx.Log("  Welcome to the Lynx Sandbox!");
-						Lynx.Log("  To get started, simply navigate to the Lynx.Load function in index.html");
-						Lynx.Log("  Start putting your game logic in that method and see how easy it is to create with Lynx!");
-						Lynx.Log("  For more information, please visit <a href=\"http://lynxjs.com/\" target=\"_blank\">LynxJS.com</a>!");
-						Lynx.Log("-------------------------------------------------------------------");
-					});
-
-					Lynx.CM.Load("Tracker");
-				});
 			}, false);
 		</script>
 	</head>

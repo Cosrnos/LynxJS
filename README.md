@@ -1,5 +1,9 @@
 ## LynxJS ##
 ***
+
+### Important : Third Rewrite (0.0.1 again!)
+I keep getting into a cycle with Lynx of a month of rapid development and three months off development. Usually in this three month period I learn so much about javascript and game theory that refactoring the current code base would take more time than a rewrite. That being said, this is the final rewrite, mostly to improve code standards and follow a good style guide. For more info please see the Github issues for our project.
+
 ### About ###
 LynxJS is a lightweight HTML5 Game Engine built with event driven gameplay in mind. Our goal is to provide an framework advanced enough to get the best performance from the machine while simplifying the game developer's process to focus on creating content rather than spending hours writing code for a single feature.
 

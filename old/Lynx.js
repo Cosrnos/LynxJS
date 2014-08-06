@@ -18,14 +18,14 @@
  *    Global Variables: Lynx
  */
 
-var Lynx = (function () {
+var Lynx = (function() {
 	//Private variables
 	var that = {};
 
 	var loadStatus = 0;
 	var loadTotal = 0;
 
-	var onLibraryLoad = function () {};
+	var onLibraryLoad = function() {};
 
 	var scene = null;
 
@@ -40,13 +40,13 @@ var Lynx = (function () {
 	that.DisableWebGL = false;
 
 	Object.defineProperty(that, "scene", {
-		get: function () {
+		get: function() {
 			return scene;
 		},
-		set: function (pScene) {
+		set: function(pScene) {
 			scene.Unload();
 			Lynx.Emit("Scene.Change"); //Loading screen can be set on this event
-			pScene.Load(function () {
+			pScene.Load(function() {
 				scene = pScene;
 			});
 		}
@@ -58,7 +58,7 @@ var Lynx = (function () {
 	 * @this {LynxLibrary}
 	 * @param {callback} <pOnLibraryLoad> Callback to be executed on load completion
 	 */
-	that.Load = (function (pOnLibraryLoad) {
+	that.Load = (function(pOnLibraryLoad) {
 		this.Filepath = "src/";
 		onLibraryLoad = pOnLibraryLoad;
 		loadCore();
@@ -69,7 +69,7 @@ var Lynx = (function () {
 	 *
 	 * @this {LynxLibrary}
 	 */
-	that.Start = (function () {
+	that.Start = (function() {
 		this.Main.Start();
 		this.Animator.Start();
 		Lynx.Emit("Core.Ready");
@@ -82,7 +82,7 @@ var Lynx = (function () {
 	 * @this {LynxLibrary}
 	 */
 
-	var loadCore = (function () {
+	var loadCore = (function() {
 		//Core
 		load("core/EventEmitter.js");
 		load("core/EventListener.js");
@@ -121,7 +121,7 @@ var Lynx = (function () {
 	 * @this {LynxLibrary}
 	 * @param {window.event} <ev> The event paramater passed by default
 	 */
-	var loadCallback = (function () {
+	var loadCallback = (function() {
 		loadStatus++;
 		checkLoadStatus();
 	}).bind(that);
@@ -132,7 +132,7 @@ var Lynx = (function () {
 	 *
 	 * @this {LynxLibrary}
 	 */
-	var checkLoadStatus = (function () {
+	var checkLoadStatus = (function() {
 		if (loadStatus >= loadTotal) {
 			initializeEngine();
 			onLibraryLoad();
@@ -144,15 +144,15 @@ var Lynx = (function () {
 	 *
 	 * @this {LynxLibrary}
 	 */
-	var initializeEngine = (function () {
+	var initializeEngine = (function() {
 		//Utils
-		console.log = function (pMessage) {
+		console.log = function(pMessage) {
 			Lynx.Log(pMessage);
 		};
 
 		console.error = console.debug = console.info = console.log;
 
-		window.onerror = function (message, file, line, position, error) {
+		window.onerror = function(message, file, line, position, error) {
 			Lynx.Log("An error was encountered in " + file + " at line " + line + ":" + position + ". \"" + error + "\"", "Error");
 			Lynx.Emit("Core.Error", this);
 		};
@@ -162,7 +162,7 @@ var Lynx = (function () {
 
 		//Threads
 		this.Main = new Lynx.Thread("Main");
-		this.Main.On("_threadUpdateMain", function (pSender) {
+		this.Main.On("_threadUpdateMain", function(pSender) {
 			if (!Lynx.DocumentHidden) {
 				Lynx.Emit("beforeUpdate", pSender);
 				Lynx.Emit("Update", pSender);
@@ -183,7 +183,7 @@ var Lynx = (function () {
 	 *
 	 * @this {LynxLibrary}
 	 */
-	var detectGL = (function () {
+	var detectGL = (function() {
 		if (!(window.WebGLRenderingContext) || Lynx.DisableWebGL) { //Context doesn't exist, fallback to 2D.
 			if (Lynx.Debug) {
 				Lynx.Log("Info", "WebGL Rendering is either unsupported or disabled.");
@@ -212,7 +212,7 @@ var Lynx = (function () {
 	 * @param {String} <pFilepath> location of the file to load
 	 * @param {bool} <pUseDefault> whether to append the base filepath to the beginning of the provided file
 	 */
-	var load = (function (pFilepath, pUseDefault) {
+	var load = (function(pFilepath, pUseDefault) {
 		pUseDefault = pUseDefault || true;
 		var c = document.createElement("script");
 		c.type = "text/javascript";
@@ -232,7 +232,7 @@ var Lynx = (function () {
 	 * @this {LynxLibrary}
 	 */
 	Object.defineProperty(that, "DocumentHidden", {
-		get: function () {
+		get: function() {
 			return document.hidden || document.msHidden || document.webkitHidden || document.mozHidden;
 		}
 	});

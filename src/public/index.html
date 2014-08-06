@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>LynxJS - HTML5 Canvas Game Engine Developer Sandbox</title>
+		<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+		<style>
+			html,body{
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+			}
+
+			body{
+				background: #2A3338;
+				color: #eeeeee;
+				font-family: Helvetica, Arial, Sans-serif;
+			}
+
+			header{
+				text-align: center;
+				min-width: 1000px;
+				margin: 00 auto;
+				padding-top: 10px;
+			}
+			a {
+				color: #eeeeee;
+			}
+			#logo{
+				text-decoration: none;
+				font-size: 40px;
+				font-family: 'Press Start 2P',Helvetica,Arial,Sans-serif;
+			}
+
+			nav {
+				border: 0px;
+				border-top: 8px solid #df8349;
+				border-bottom: 8px solid #df8349;
+				padding: 5px;
+				width: 806px;
+				margin: 00 auto;
+				clear: both;
+				overflow: auto;
+				text-transform: uppercase;
+			}
+
+			nav a{
+				text-decoration: none;
+				font-size: 20px;
+				font-weight: 500;
+				letter-spacing: 2px;
+				padding: 5px 10px 5px 10px;
+			}
+
+			nav a:hover{
+				color: #df8349;
+			}
+
+			h2{
+				font-size: 26px;
+				letter-spacing: 2px;
+				width: 800px;
+				text-align: center;
+				border: 8px solid #df8349;
+				border-top: 0px;
+				border-bottom: 0px;
+				margin: 00 auto;
+			}
+
+			#content a{
+				color: #00bff3;
+				text-decoration: none;
+			}
+
+			#viewport-container{
+				height: 450px;
+				width: 800px;
+				margin: 00 auto;
+				border: 8px solid #df8349;
+			}
+
+			#console-container{
+				background: #121212;
+				color: #fff;
+				height: 200px;
+				width: 800px;
+				margin: 00 auto;
+				border: 8px solid #df8349;
+				overflow-y: scroll;
+				overflow-x: hidden;
+				position: relative;
+			}
+
+			#console{
+				position: absolute;
+				bottom: 5px;
+				left: 0;
+			}
+
+			#console span{
+				display: block;
+				margin: 0px;
+				padding: 0px;
+				position: relative;
+				bottom: 0;
+				left: 0;
+				font-size: 14px;
+				font-family: Consolas, "Courier New", Courier, monospace;
+			}
+		</style>
+		<!-- Switch these to Minified Version for Production -->
+		<script src="js/LynxJS.vendor.js">
+		</script>
+		<script src="js/LynxJS.js">
+		</script>
+
+		<!-- Start Game Logic Here! -->
+		<script type="text/javascript">
+			window.addEventListener("load",function load(event){
+
+			}, false);
+		</script>
+	</head>
+	<body>
+		<header>
+			<a href="/" id="logo">LynxJS</a>
+		</header>
+		<h2 style="border-top: 8px solid #df8349; border-radius: 15px 15px 0px 0px;">Viewport</h2>
+		<div id="viewport-container" width="800" height="450">
+		</div>
+		<h2>Console</h2>
+		<div id="console-container" width="600" height="300">
+			<div id="console">
+			</div>
+		</div>
+		<footer>
+		</footer>
+	</body>
+</html>

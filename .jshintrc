@@ -1,0 +1,11 @@
+{
+    "browser": true,
+    "predef": ["Lynx", "_"],
+    "undef": true,
+    "unused": true,
+    "node": true,
+    "devel": true,
+    "multistr": true,
+    "strict": false,
+    "quotmark": false
+}
