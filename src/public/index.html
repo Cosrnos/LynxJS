@@ -124,7 +124,8 @@
 			window.addEventListener('load', function(){
 				Lynx.on('ready', function(){
 					Lynx.Logger.info("This is a test");
-					Lynx.Graphics.Canvas.create(document.getElementById('lynx-viewport'));
+					var cvs = Lynx.Graphics.Canvas.create(document.getElementById('lynx-viewport'));
+					cvs.background = 0xff33cc;
 				});
 			});
 		</script>

@@ -21,18 +21,18 @@
 		return new colorModel(r, g, b, 255);
 	}
 
-	function colorModel(r, g, b, a) {
-		var r = r;
-		var g = g;
-		var b = b;
-		var a = a;
+	function colorModel(pR, pG, pB, pA) {
+		var r = pR;
+		var g = pG;
+		var b = pB;
+		var a = pA;
 
 		Object.defineProperty(this, 'r', {
 			get: function() {
 				return r;
 			},
 			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value < 255) {
+				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value <= 255) {
 					r = value;
 				}
 			}
@@ -43,7 +43,7 @@
 				return g;
 			},
 			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value < 255) {
+				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value <= 255) {
 					g = value;
 				}
 			}
@@ -54,7 +54,7 @@
 				return b;
 			},
 			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value < 255) {
+				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value <= 255) {
 					b = value;
 				}
 			}
@@ -65,7 +65,7 @@
 				return a;
 			},
 			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value < 255) {
+				if (typeof value === 'number' && !isNaN(value) && value >= 0 && value <= 255) {
 					a = value;
 				}
 			}
