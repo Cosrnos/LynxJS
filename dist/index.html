@@ -109,17 +109,24 @@
 				font-family: Consolas, "Courier New", Courier, monospace;
 			}
 		</style>
+
 		<!-- Switch these to Minified Version for Production -->
 		<script src="js/LynxJS.vendor.js">
 		</script>
 		<script src="js/LynxJS.js">
 		</script>
 
+		<!-- Remove this for Production -->
+		<script src="//localhost:35729/livereload.js"></script>
+
 		<!-- Start Game Logic Here! -->
 		<script type="text/javascript">
-			window.addEventListener("load",function load(event){
-
-			}, false);
+			window.addEventListener('load', function(){
+				Lynx.on('ready', function(){
+					Lynx.Logger.info("This is a test");
+					Lynx.Graphics.Canvas.create(document.getElementById('lynx-viewport'));
+				});
+			});
 		</script>
 	</head>
 	<body>
@@ -128,6 +135,9 @@
 		</header>
 		<h2 style="border-top: 8px solid #df8349; border-radius: 15px 15px 0px 0px;">Viewport</h2>
 		<div id="viewport-container" width="800" height="450">
+			<canvas id="lynx-viewport" width="800" height="450">
+				Your browser doesn't support canvas games! Download a cooler browser if you want to play this game!
+			</canvas>
 		</div>
 		<h2>Console</h2>
 		<div id="console-container" width="600" height="300">

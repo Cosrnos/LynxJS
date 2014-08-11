@@ -1,4 +1,4 @@
-(function() {
+(function lynxInit_heart() {
 	var _tasks = [];
 	var _interval = null;
 	var _logger = null;

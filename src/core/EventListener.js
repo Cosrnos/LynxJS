@@ -1,6 +1,4 @@
-(function() {
-	var _logger = Lynx.Logger;
-
+(function lynxInit_eventListener() {
 	Lynx.EventListener = function() {
 		var _events = {};
 
@@ -10,11 +8,15 @@
 			}
 
 			_events[name].push(callback);
-		},
+		};
+
+		this.getEvents = function() {
+			return _events;
+		};
 
 		this.on = function(name, callback) {
 			this.addListener(name, callback);
-		},
+		};
 
 		this.removeListener = function(name, callback) {
 			if (!_events[name]) {
@@ -34,15 +36,17 @@
 			}
 
 			return true;
-		},
+		};
 
 		this.notify = function(event, data) {
-			var event = event || '';
-			var data = data || {};
+			event = event || '';
+			data = data || {};
 
 			_.each(_events[event], function executeCallbacks(evt) {
 				evt(data);
 			});
-		}
-	}
+		};
+
+		Lynx.addListener(this);
+	};
 })();

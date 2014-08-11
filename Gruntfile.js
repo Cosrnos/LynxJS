@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 			files: ['src/**/*'],
 			tasks: ['clean', 'concat', 'uglify', 'copy'],
 			options: {
-				livereload: true
+				livereload: true,
 			}
 		}
 	});

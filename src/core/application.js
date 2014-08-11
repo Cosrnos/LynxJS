@@ -4,7 +4,7 @@
  * Created by Cosrnos
  */
 
-(function() {
+(function lynxInit_application() {
 	var logger = {};
 
 	window.Lynx = {
@@ -20,19 +20,22 @@
 		logger.info('Starting Lynx Library....');
 		Lynx.Heart.start();
 
-		var tsk = new Lynx.Task();
+		var tsk = Lynx.Task.create();
 
 		tsk.before = function() {
-			logger.debug('Intializing Event Emitter...');
-			Lynx.EventEmitter.apply(this);
-
 			logger.debug('Testing Event Emitter...')
 
 			if (!testEvents()) {
 				return logger.warn('Lynx Event Emitter is not working properly. Aborting.');
 			}
 
+			logger.debug('Starting render loop...');
+
 			logger.debug('Tests passed!');
+
+			Lynx.Graphics.Loop.start();
+
+			Lynx.emit('ready');
 
 			return true;
 		}.bind(this);

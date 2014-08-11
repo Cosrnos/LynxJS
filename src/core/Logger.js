@@ -4,7 +4,7 @@
  * Created by Cosrnos
  */
 
-(function() {
+(function lynxInit_logger() {
 	var _defaultLog = console.log.bind(console);
 	var logTypeArray = [];
 
