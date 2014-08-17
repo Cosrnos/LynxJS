@@ -2,104 +2,109 @@
 	var canvasIndex = -1;
 	var logger = Lynx.Logger;
 
+    function baseCanvasModel(){
+        var height = 0;
+        var width = 0;
+        var background = Lynx.Graphics.Color.create();
+
+        Lynx.Object.apply(this);
+
+
+        this.id = canvasIndex++;
+        this.context = '2d';
+
+        // Properties
+        Object.defineProperty(this, 'height', {
+            get: function() {
+                return height;
+            },
+            set: function(value) {
+                if (typeof value === 'number' && !isNaN(value)) {
+                    height = value;
+                    this.element.height = height;
+                    if (this.buffer) {
+                        this.buffer.height = height;
+                    }
+                } else {
+                    logger.warn('Cannot set height value of canvas #' + this.id + ' to ' + value + ' as it is not an integer.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'width', {
+            get: function() {
+                return width;
+            },
+            set: function(value) {
+                if (typeof value === 'number' && !isNaN(value)) {
+                    width = value;
+                    this.element.width = width;
+                    if (this.buffer) {
+                        this.buffer.width = width;
+                    }
+                } else {
+                    logger.warn('Cannot set width value of canvas #' + this.id + ' to ' + value + 'as it is not an integer.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'background', {
+            get: function() {
+                if (typeof background === 'number' && !isNaN(value)) {
+                    // TODO parse number to object
+                } else if (Lynx.Graphics.isColor(background)) {
+                    return background;
+                } else {
+                    debugger;
+                    // TODO: Support image parsing
+                }
+
+                // TODO: Fix this
+                return background;
+            },
+            set: function(value) {
+                if (Lynx.Graphics.isColor(value)) {
+                    background = value;
+                } else if ((typeof value === 'number' && !isNaN(value) && value > 0) || (typeof value === 'string')) {
+                    background = Lynx.Graphics.Color.createFromHex(value);
+                } else {
+                    logger.warn('Could not set background of canvas #' + this.id + ' to invalid color value "' + value + '"');
+                }
+            }
+        });
+    }
+
 	function canvasModel(domElement, useBuffer) {
-		var height = 0;
-		var width = 0;
-		var background = Lynx.Graphics.Color.create();
+        if (useBuffer !== false) {
+            useBuffer = true;
+        }
 
-		Lynx.Object.apply(this);
+        baseCanvasModel.apply(this);
 
-		if (useBuffer !== false) {
-			useBuffer = true;
-		}
+        this.buffer = null;
 
-		this.id = canvasIndex++;
-		this.context = '2d';
+        if (domElement && domElement.tagName === 'CANVAS') {
+            this.element = domElement;
+            this.height = this.element.height;
+            this.width = this.element.width;
 
-		this.buffer = null;
+            domElement.LynxCanvas = this;
+        } else {
+            this.element = document.createElement('canvas');
+        }
 
-		// Properties
-		Object.defineProperty(this, 'height', {
-			get: function() {
-				return height;
-			},
-			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value)) {
-					height = value;
-					this.element.height = height;
-					if (this.buffer) {
-						this.buffer.height = height;
-					}
-				} else {
-					logger.warn('Cannot set height value of canvas #' + this.id + ' to ' + value + ' as it is not an integer.');
-				}
-			}
-		});
+        if (useBuffer) {
+            this.buffer = Lynx.Graphics.Canvas.createBuffer(null, {
+                width: this.width,
+                height: this.height,
+                background: this.background,
+                context: this.context
+            });
+        }
 
-		Object.defineProperty(this, 'width', {
-			get: function() {
-				return width;
-			},
-			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value)) {
-					width = value;
-					this.element.width = width;
-					if (this.buffer) {
-						this.buffer.width = width;
-					}
-				} else {
-					logger.warn('Cannot set width value of canvas #' + this.id + ' to ' + value + 'as it is not an integer.');
-				}
-			}
-		});
-
-		Object.defineProperty(this, 'background', {
-			get: function() {
-				if (typeof background === 'number' && !isNaN(value)) {
-					// TODO parse number to object
-				} else if (Lynx.Graphics.isColor(background)) {
-					return background;
-				} else {
-					debugger;
-					// TODO: Support image parsing
-				}
-
-				// TODO: Fix this
-				return background;
-			},
-			set: function(value) {
-				if (Lynx.Graphics.isColor(value)) {
-					background = value;
-				} else if ((typeof value === 'number' && !isNaN(value) && value > 0) || (typeof value === 'string')) {
-					background = Lynx.Graphics.Color.createFromHex(value);
-				} else {
-					logger.warn('Could not set background of canvas #' + this.id + ' to invalid color value "' + value + '"');
-				}
-			}
-		});
-
-		if (domElement && domElement.tagName === 'CANVAS') {
-			this.element = domElement;
-			this.height = this.element.height;
-			this.width = this.element.width;
-
-			domElement.LynxCanvas = this;
-		} else {
-			this.element = document.createElement('canvas');
-		}
-
-		if (useBuffer) {
-			this.buffer = Lynx.Graphics.Canvas.createBuffer(null, {
-				width: this.width,
-				height: this.height,
-				background: this.background,
-				context: this.context
-			});
-		}
-
-		this.renderer = Lynx.Graphics.Renderer.create(this, {});
-		Lynx.Graphics.Loop.addCanvas(this);
-	}
+        this.renderer = Lynx.Graphics.Renderer.create(this, {});
+        Lynx.Graphics.Loop.addCanvas(this);
+    }
 
 	canvasModel.prototype.destroy = function() {
 		Lynx.Graphics.Loop.removeCanvas(this);
@@ -111,9 +116,20 @@
 		}
 	};
 
+    canvasModel.prototype.createElement = function(options){
+        var node = Lynx.Graphics.Element.create(options);
+
+        this.renderer.addNode(node);
+
+        return node;
+    };
+
 	function buffer(context) {
+        baseCanvasModel.apply(this);
+
 		context = context || '2d';
-		this.context = '2d';
+
+		this.context = context;
 
 		this.element = document.createElement('canvas');
 	}

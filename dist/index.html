@@ -126,6 +126,21 @@
 					Lynx.Logger.info("This is a test");
 					var cvs = Lynx.Graphics.Canvas.create(document.getElementById('lynx-viewport'));
 					cvs.background = 0xff33cc;
+                    cvs.createElement({
+                        x: 50,
+                        y: 50,
+                        color: 0x33ccff,
+                        width: 50,
+                        height: 50
+                    });
+
+                    cvs.createElement({
+                        x: 250,
+                        y: 100,
+                        color: 0xcc33ff,
+                        width: 50,
+                        height: 50
+                    });
 				});
 			});
 		</script>

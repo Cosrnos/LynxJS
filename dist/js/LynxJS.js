@@ -485,108 +485,130 @@
 	}
 })();
 Lynx.Graphics = {};
+(function() {
+	function batchModel(array) {
+		this.nodes = array;
+		this.before = function(renderer) {};
+		this.beforeEach = function(renderer, node) {};
+		this.afterEach = function(renderer, node) {};
+		this.after = function(renderer) {};
+	}
+
+	Lynx.Graphics.Batch = Lynx.Object.create({
+		create: function(array, options) {
+			options = options || {};
+
+			return _.extend(new batchModel(array), options);
+		}
+	});
+})();
 (function lynxInit_canvas() {
 	var canvasIndex = -1;
 	var logger = Lynx.Logger;
 
+    function baseCanvasModel(){
+        var height = 0;
+        var width = 0;
+        var background = Lynx.Graphics.Color.create();
+
+        Lynx.Object.apply(this);
+
+
+        this.id = canvasIndex++;
+        this.context = '2d';
+
+        // Properties
+        Object.defineProperty(this, 'height', {
+            get: function() {
+                return height;
+            },
+            set: function(value) {
+                if (typeof value === 'number' && !isNaN(value)) {
+                    height = value;
+                    this.element.height = height;
+                    if (this.buffer) {
+                        this.buffer.height = height;
+                    }
+                } else {
+                    logger.warn('Cannot set height value of canvas #' + this.id + ' to ' + value + ' as it is not an integer.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'width', {
+            get: function() {
+                return width;
+            },
+            set: function(value) {
+                if (typeof value === 'number' && !isNaN(value)) {
+                    width = value;
+                    this.element.width = width;
+                    if (this.buffer) {
+                        this.buffer.width = width;
+                    }
+                } else {
+                    logger.warn('Cannot set width value of canvas #' + this.id + ' to ' + value + 'as it is not an integer.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'background', {
+            get: function() {
+                if (typeof background === 'number' && !isNaN(value)) {
+                    // TODO parse number to object
+                } else if (Lynx.Graphics.isColor(background)) {
+                    return background;
+                } else {
+                    debugger;
+                    // TODO: Support image parsing
+                }
+
+                // TODO: Fix this
+                return background;
+            },
+            set: function(value) {
+                if (Lynx.Graphics.isColor(value)) {
+                    background = value;
+                } else if ((typeof value === 'number' && !isNaN(value) && value > 0) || (typeof value === 'string')) {
+                    background = Lynx.Graphics.Color.createFromHex(value);
+                } else {
+                    logger.warn('Could not set background of canvas #' + this.id + ' to invalid color value "' + value + '"');
+                }
+            }
+        });
+    }
+
 	function canvasModel(domElement, useBuffer) {
-		var height = 0;
-		var width = 0;
-		var background = Lynx.Graphics.Color.create();
+        if (useBuffer !== false) {
+            useBuffer = true;
+        }
 
-		Lynx.Object.apply(this);
+        baseCanvasModel.apply(this);
 
-		if (useBuffer !== false) {
-			useBuffer = true;
-		}
+        this.buffer = null;
 
-		this.id = canvasIndex++;
-		this.context = '2d';
+        if (domElement && domElement.tagName === 'CANVAS') {
+            this.element = domElement;
+            this.height = this.element.height;
+            this.width = this.element.width;
 
-		this.buffer = null;
+            domElement.LynxCanvas = this;
+        } else {
+            this.element = document.createElement('canvas');
+        }
 
-		// Properties
-		Object.defineProperty(this, 'height', {
-			get: function() {
-				return height;
-			},
-			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value)) {
-					height = value;
-					this.element.height = height;
-					if (this.buffer) {
-						this.buffer.height = height;
-					}
-				} else {
-					logger.warn('Cannot set height value of canvas #' + this.id + ' to ' + value + ' as it is not an integer.');
-				}
-			}
-		});
+        if (useBuffer) {
+            this.buffer = Lynx.Graphics.Canvas.createBuffer(null, {
+                width: this.width,
+                height: this.height,
+                background: this.background,
+                context: this.context
+            });
+        }
 
-		Object.defineProperty(this, 'width', {
-			get: function() {
-				return width;
-			},
-			set: function(value) {
-				if (typeof value === 'number' && !isNaN(value)) {
-					width = value;
-					this.element.width = width;
-					if (this.buffer) {
-						this.buffer.width = width;
-					}
-				} else {
-					logger.warn('Cannot set width value of canvas #' + this.id + ' to ' + value + 'as it is not an integer.');
-				}
-			}
-		});
-
-		Object.defineProperty(this, 'background', {
-			get: function() {
-				if (typeof background === 'number' && !isNaN(value)) {
-					// TODO parse number to object
-				} else if (Lynx.Graphics.isColor(background)) {
-					return background;
-				} else {
-					debugger;
-					// TODO: Support image parsing
-				}
-
-				// TODO: Fix this
-				return background;
-			},
-			set: function(value) {
-				if (Lynx.Graphics.isColor(value)) {
-					background = value;
-				} else if ((typeof value === 'number' && !isNaN(value) && value > 0) || (typeof value === 'string')) {
-					background = Lynx.Graphics.Color.createFromHex(value);
-				} else {
-					logger.warn('Could not set background of canvas #' + this.id + ' to invalid color value "' + value + '"');
-				}
-			}
-		});
-
-		if (domElement && domElement.tagName === 'CANVAS') {
-			this.element = domElement;
-			this.height = this.element.height;
-			this.width = this.element.width;
-
-			domElement.LynxCanvas = this;
-		} else {
-			this.element = document.createElement('canvas');
-		}
-
-		if (useBuffer) {
-			this.buffer = Lynx.Graphics.Canvas.createBuffer(null, {
-				width: this.width,
-				height: this.height,
-				background: this.background,
-				context: this.context
-			});
-		}
-
-		this.renderer = Lynx.Graphics.Renderer.create(this, {});
-		Lynx.Graphics.Loop.addCanvas(this);
-	}
+        this.renderer = Lynx.Graphics.Renderer.create(this, {});
+        Lynx.Graphics.Loop.addCanvas(this);
+    }
 
 	canvasModel.prototype.destroy = function() {
 		Lynx.Graphics.Loop.removeCanvas(this);
@@ -598,7 +620,17 @@ Lynx.Graphics = {};
 		}
 	};
 
+    canvasModel.prototype.createElement = function(options){
+        var node = Lynx.Graphics.Element.create(options);
+
+        this.renderer.addNode(node);
+
+        return node;
+    };
+
 	function buffer(context) {
+        baseCanvasModel.apply(this);
+
 		context = context || '2d';
 		this.context = '2d';
 
@@ -760,6 +792,142 @@ Lynx.Graphics = {};
 		}
 	};
 })();
+(function() {
+	function elementModel() {
+        Lynx.Object.apply(this);
+
+		var x = 0;
+		var y = 0;
+		var z = 0;
+
+		var width = 0;
+		var height = 0;
+		var depth = 0;
+
+        var color = Lynx.Graphics.Color.create();
+        var stroke = {
+            color: Lynx.Graphics.Color.create(),
+            width: "0px"
+        };
+
+        this.render = function(target, isBatch){
+            if(!isBatch){
+                target.fillStyle = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+            }
+
+            target.fillRect(x, y, width, height);
+        };
+
+        Object.defineProperty(this, 'x', {
+            get: function(){
+                return x;
+            },
+            set: function(value){
+                if(typeof value === 'number' && !isNaN(value)){
+                    x = value;
+                }else{
+                    Lynx.Logger.warn('Cannot set property x to value `'+value+'` as it is not a number.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'y', {
+            get: function(){
+                return y;
+            },
+            set: function(value){
+                if(typeof value === 'number' && !isNaN(value)){
+                    y = value;
+                }else{
+                    Lynx.Logger.warn('Cannot set property y to value `'+value+'` as it is not a number.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'z', {
+            get: function(){
+                return z;
+            },
+            set: function(value){
+                if(typeof value === 'number' && !isNaN(value)){
+                    z = value;
+                }else{
+                    Lynx.Logger.warn('Cannot set property z to value `'+value+'` as it is not a number.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'width', {
+            get: function(){
+                return width;
+            },
+            set: function(value){
+                if(typeof value === 'number' && !isNaN(value)){
+                    width = value;
+                }else{
+                    Lynx.Logger.warn('Cannot set property width to value `'+value+'` as it is not a number.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'height', {
+            get: function(){
+                return height;
+            },
+            set: function(value) {
+                if (typeof value === 'number' && !isNaN(value)) {
+                    height = value;
+                } else {
+                    Lynx.Logger.warn('Cannot set property height to value `' + value + '` as it is not a number.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'depth', {
+            get: function(){
+                return depth;
+            },
+            set: function(value){
+                if(typeof value === 'number' && !isNaN(value)){
+                    depth = value;
+                } else {
+                    Lynx.Logger.warn('Cannot set property height to value `'+ value +'` as it is not a number.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'color', {
+            get: function(){
+                return color;
+            },
+            set: function(value){
+                if(Lynx.Graphics.isColor(value)){
+                    color = value;
+                }else if(typeof value === 'string' || typeof value === 'number'){
+                    color.hex = value;
+                }else{
+                    Lynx.Logger.warn('Cannot set property color of element to '+value+' as it is not a valid color argument.');
+                }
+            }
+        });
+
+        Object.defineProperty(this, 'stroke', {
+            get: function(){
+                return stroke;
+            },
+            set: function(){
+                //TODO: Color Stroke Support
+                Lynx.Logger.warn('Cannot set stroke property as it is not currently supported. For more information please view the LynxJS Tracker.');
+            }
+        });
+    }
+
+	Lynx.Graphics.Element = Lynx.Object.create({
+		create: function(options) {
+			return _.extend(new elementModel(), options);
+		}
+	});
+})();
 (function lynxInit_loop() {
 	var _running = false;
 	var logger = Lynx.Logger;
@@ -837,6 +1005,7 @@ Lynx.Graphics = {};
 
 	function renderModel(parent) {
 		var nodes = [];
+        var renderer = this;
 
 		this.parent = parent;
 
@@ -876,12 +1045,39 @@ Lynx.Graphics = {};
 		};
 
 		this.render = function() {
-			var ctx = this.parent.element.getContext(this.context);
+			var ctx = this.parent.buffer.element.getContext(this.context);
 			var bg = this.parent.background;
 
 			ctx.clearRect(0, 0, this.parent.width, this.parent.height);
 			ctx.fillStyle = 'rgb(' + bg.r + ',' + bg.g + ',' + bg.b + ')';
 			ctx.fillRect(0, 0, this.parent.width, this.parent.height);
+
+            //TODO: Sort nodes by asset type & render batches
+            _.each(nodes, function(node){
+                node.render(ctx, false);
+            });
+
+            this.parent.element.getContext(this.context).drawImage(this.parent.buffer.element, 0, 0);
+            ctx.clearRect(0, 0, this.parent.width, this.parent.height);
+		};
+
+		this.renderBatch = function(batch) {
+			if (!Lynx.Graphics.isBatch(batch) && !(batch instanceof Array)) {
+				Lynx.Logger.warn('Cannot call renderBatch on ' + batch + ' as it is not a Lynx.Graphics.Batch object nor is it an array.');
+				return false;
+			}
+
+			if (batch instanceof Array) {
+				batch = Lynx.Batch.create(batch);
+			}
+
+			batch.before(this);
+			_.each(batch.nodes, function(node) {
+				batch.beforeEach(renderer, node);
+				node.render(renderer, true);
+				batch.afterEach(renderer, node);
+			});
+			batch.after(this);
 		};
 
 		Object.defineProperty(this, 'nodes', {
@@ -899,6 +1095,6 @@ Lynx.Graphics = {};
 			options = options || {};
 
 			return _.extend(new renderModel(parent), options);
-		},
+		}
 	});
 })();
